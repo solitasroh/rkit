@@ -14,30 +14,39 @@ mcukit is a Claude Code plugin that provides structured development workflows fo
 
 ## Installation
 
-### Option 1: Direct Install from GitHub (Recommended)
+### Option 1: Plugin Marketplace (Recommended)
 
 ```bash
-# In Claude Code
-/install-plugin https://github.com/solitasroh/mcukit
+# 1. Register mcukit as a marketplace
+/plugin marketplace add solitasroh/mcukit
+
+# 2. Install the plugin
+/plugin install mcukit@solitasroh-mcukit
 ```
 
-### Option 2: Manual Clone + Plugin Add
+### Option 2: Manual Clone + Symlink
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/solitasroh/mcukit.git ~/.claude/plugins/mcukit
 
-# 2. Add as plugin (if not auto-detected)
-claude plugins add ~/.claude/plugins/mcukit
+# 2. Symlink skills and agents
+ln -s ~/.claude/plugins/mcukit/skills ~/.claude/skills
+ln -s ~/.claude/plugins/mcukit/agents ~/.claude/agents
 ```
 
 ### Option 3: Project-local (Submodule)
 
 ```bash
-# Add to your embedded project as a submodule
+# 1. Add to your embedded project as a submodule
 cd my-stm32-project
-git submodule add https://github.com/solitasroh/mcukit.git .claude/plugins/mcukit
-git submodule update --init
+git submodule add https://github.com/solitasroh/mcukit.git .mcukit
+
+# 2. Symlink into .claude/
+mkdir -p .claude
+ln -s ../.mcukit/skills .claude/skills
+ln -s ../.mcukit/agents .claude/agents
+cp .mcukit/CLAUDE.md ./CLAUDE.md
 ```
 
 ## Quick Start

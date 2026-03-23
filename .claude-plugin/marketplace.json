@@ -1,0 +1,25 @@
+{
+  "name": "solitasroh-mcukit",
+  "owner": {
+    "name": "solitasroh"
+  },
+  "metadata": {
+    "description": "AI Native Embedded Development Kit for MCU/MPU/WPF",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "mcukit",
+      "source": ".",
+      "description": "PDCA-driven MCU/MPU/WPF development with domain-specific AI agents",
+      "version": "0.5.0",
+      "author": {
+        "name": "solitasroh"
+      },
+      "repository": "https://github.com/solitasroh/mcukit",
+      "license": "MIT",
+      "keywords": ["pdca", "embedded", "mcu", "mpu", "wpf", "stm32", "imx6", "dotnet"],
+      "category": "embedded-development"
+    }
+  ]
+}

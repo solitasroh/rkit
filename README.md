@@ -60,11 +60,12 @@ claude
 
 | Component | Count | Description |
 |-----------|:-----:|-------------|
-| **Skills** | 16 | Domain knowledge (HAL, DTS, MVVM, FreeRTOS, MISRA...) |
-| **Agents** | 9 | AI specialists (fw-architect, linux-bsp-expert, wpf-architect...) |
-| **Hook Events** | 7 | Auto-triggers (post-build memory report, DTS validation...) |
+| **Skills** | 44 | Domain knowledge, PDCA workflow, 9-phase pipeline, utilities |
+| **Agents** | 39 | AI specialists (fw-architect, linux-bsp-expert, wpf-architect, CTO, PM team...) |
+| **Hook Events** | 18 | Lifecycle automation (build, validation, PDCA, team, session...) |
 | **Output Styles** | 4 | Response formatting (learning, pdca-guide, embedded, pdca-embedded) |
-| **Templates** | 8 | PDCA document templates (hw-spec, memory-budget, driver-spec...) |
+| **Templates** | 38 | PDCA documents, domain specs, pipeline phases, shared patterns |
+| **MCP Servers** | 2 | PDCA status & metrics, code quality & gap analysis |
 | **Refs** | 5 | Code pattern references (HAL, SDK, DTS, Yocto, MVVM) |
 | **Integration Tests** | 76 | All passing |
 

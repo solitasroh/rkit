@@ -4,9 +4,9 @@
   "displayName": "mcukit — AI Native Embedded Development Kit",
   "description": "PDCA-driven MCU/MPU/WPF development with domain-specific AI agents. Supports STM32, NXP Kinetis K, i.MX6/i.MX6ULL/i.MX28, and C#/WPF. One Kit, Three Domains.",
   "author": {
-    "name": "Rootech"
+    "name": "solitasroh"
   },
-  "repository": "https://github.com/Rootech/mcukit",
+  "repository": "https://github.com/solitasroh/mcukit",
   "license": "MIT",
   "keywords": [
     "pdca", "embedded", "mcu", "mpu", "wpf",

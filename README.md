@@ -18,14 +18,14 @@ mcukit is a Claude Code plugin that provides structured development workflows fo
 
 ```bash
 # In Claude Code
-/install-plugin https://github.com/Rootech/mcukit
+/install-plugin https://github.com/solitasroh/mcukit
 ```
 
 ### Option 2: Manual Clone + Plugin Add
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Rootech/mcukit.git ~/.claude/plugins/mcukit
+git clone https://github.com/solitasroh/mcukit.git ~/.claude/plugins/mcukit
 
 # 2. Add as plugin (if not auto-detected)
 claude plugins add ~/.claude/plugins/mcukit
@@ -36,7 +36,7 @@ claude plugins add ~/.claude/plugins/mcukit
 ```bash
 # Add to your embedded project as a submodule
 cd my-stm32-project
-git submodule add https://github.com/Rootech/mcukit.git .claude/plugins/mcukit
+git submodule add https://github.com/solitasroh/mcukit.git .claude/plugins/mcukit
 git submodule update --init
 ```
 

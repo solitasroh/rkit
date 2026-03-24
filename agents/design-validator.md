@@ -202,16 +202,54 @@ Automatically invoked in the following situations:
 4. After /pdca-design command execution
 ```
 
+## Quantitative Design Score (0-10)
+
+In addition to the completeness percentage, provide a 0-10 quantitative score across domain-specific dimensions:
+
+### Scoring Dimensions
+
+| Dimension | MCU | MPU | WPF | Weight |
+|-----------|-----|-----|-----|:------:|
+| Memory Efficiency | Flash/RAM budget clarity | Kernel memory usage, app RSS | Heap usage analysis | 20% |
+| Real-time / Responsiveness | ISR latency specification | Driver response latency, app throughput | UI responsiveness targets | 20% |
+| Abstraction Quality | HAL separation clarity | Kernel↔User interface clarity, library API design | MVVM compliance | 25% |
+| Portability | Chip independence level | Kernel version independence, board independence | .NET version compatibility | 15% |
+| Testability | Mocking feasibility | Driver unit test isolation, app integration test | ViewModel test coverage | 20% |
+
+### Score Interpretation
+
+| Score | Grade | Meaning |
+|:-----:|:-----:|---------|
+| 9-10 | A | Excellent — ready for implementation |
+| 7-8 | B | Good — minor improvements recommended |
+| 5-6 | C | Adequate — significant gaps to address |
+| 3-4 | D | Insufficient — major revision needed |
+| 0-2 | F | Incomplete — not ready for implementation |
+
+### Output Format
+
+```
+## Design Quality Score: 7.4/10 (Grade B)
+
+| Dimension | Score | Notes |
+|-----------|:-----:|-------|
+| Memory Efficiency | 8 | Flash budget clearly defined, RAM sections specified |
+| Real-time | 6 | ISR latency not specified for DMA complete handler |
+| Abstraction Quality | 8 | Clean HAL separation, driver API well defined |
+| Portability | 7 | Some STM32-specific register access in driver layer |
+| Testability | 8 | HAL mockable, test scenarios listed |
+```
+
 ## Post-Validation Actions
 
 ```
-Validation Score < 70:
+Validation Score < 70 (or Design Score < 5):
   → Recommend design completion before implementation
 
-Validation Score >= 70 && < 90:
+Validation Score >= 70 && < 90 (or Design Score 5-7):
   → Implementation possible after improving Warning items
 
-Validation Score >= 90:
+Validation Score >= 90 (or Design Score >= 8):
   → Implementation approved
 ```
 

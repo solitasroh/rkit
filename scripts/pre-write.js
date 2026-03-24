@@ -40,6 +40,14 @@ try {
   permissionManager = null;
 }
 
+// v1.0.0: Freeze Manager (gstack-inspired)
+let freezeManager;
+try {
+  freezeManager = require('../lib/control/freeze-manager');
+} catch (e) {
+  freezeManager = null;
+}
+
 // Read input from stdin
 const input = readStdinSync();
 const { filePath, content } = parseHookInput(input);
@@ -75,6 +83,40 @@ if (permissionManager) {
     debugLog('PreToolUse', 'Permission requires confirmation', { filePath, tool: toolName });
   }
 }
+
+// ============================================================
+// 0.5. Freeze Check (gstack-inspired file protection)
+// ============================================================
+if (freezeManager) {
+  const freezeResult = freezeManager.isFrozen(filePath);
+  if (freezeResult.frozen) {
+    debugLog('PreToolUse', 'File is frozen', { filePath, pattern: freezeResult.matchedPattern });
+    outputBlock(
+      `🔒 File "${filePath}" is frozen (pattern: ${freezeResult.matchedPattern}).\n` +
+      `Reason: ${freezeResult.reason}\n` +
+      `Use /freeze unfreeze ${freezeResult.matchedPattern} to allow modification.`
+    );
+    process.exit(2);
+  }
+}
+
+// ============================================================
+// 0.6. Arch-Lock Check (gstack-inspired architecture boundary enforcement)
+// ============================================================
+try {
+  const archLock = require('../lib/control/arch-lock');
+  if (archLock.isLocked()) {
+    const violation = archLock.checkViolation(filePath);
+    if (violation.violation) {
+      const ids = violation.decisions.map(d => `${d.id} (${d.title})`).join(', ');
+      contextParts.push(
+        `Architecture decision applies: ${ids}. ` +
+        `Ensure changes comply with locked architecture. Use /arch-lock unlock to modify.`
+      );
+      debugLog('PreToolUse', 'Arch-lock boundary warning', { filePath, decisions: violation.decisions.map(d => d.id) });
+    }
+  }
+} catch (_) {}
 
 // ============================================================
 // 1. Task Classification (v1.3.0 - Line-based, Automation First)

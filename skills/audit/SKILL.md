@@ -45,6 +45,7 @@ task-template: "[Audit] {action}"
 | `log` | Show recent audit log entries (last 20) | `/audit log` |
 | `trace <feature>` | Show decision traces for a feature | `/audit trace user-auth` |
 | `summary` | Show daily/weekly audit summary | `/audit summary` |
+| `retro` | Weekly retrospective (PDCA completion, match rate trend) | `/audit retro` |
 | `search <query>` | Search audit logs by action type, feature, or date | `/audit search "phase_transition"` |
 
 ## Action Details
@@ -170,6 +171,50 @@ Trust Score Change: +3 (69 -> 72)
 Weekly Trend (last 7 days):
   Mon: 32 actions | Tue: 45 actions | Wed: 28 actions
   ...
+```
+
+### retro (Weekly Retrospective)
+
+Generate a weekly retrospective report with PDCA metrics and trends.
+
+1. Read audit logs for the past 7 days
+2. Aggregate PDCA metrics:
+   - PDCA completion rate (features completed / features started)
+   - Average match rate across all analyzed features
+   - Total iteration count (Act phase cycles)
+   - Average iterations per feature
+3. Calculate trend vs previous week
+4. Generate ASCII trend chart
+5. Identify top improvements and recurring issues
+
+**Output Format**:
+```
+--- Weekly Retrospective (2026-03-18 ~ 2026-03-25) ---
+PDCA Completion Rate : 3/4 (75%)     [prev: 2/3 (67%) +8%]
+Avg Match Rate       : 92%           [prev: 88%        +4%]
+Total Iterations     : 7             [prev: 9          -2]
+Avg Iterations/Feature: 1.75         [prev: 3.0        -1.25]
+
+Match Rate Trend (7 days):
+  100|                    ●
+   90|    ●       ●  ●
+   80|  ●   ●  ●
+   70|
+      Mon Tue Wed Thu Fri Sat Sun
+
+Features Completed:
+  [x] uart-dma      | 95% | 2 iter
+  [x] spi-config    | 91% | 1 iter
+  [x] gpio-manager  | 98% | 1 iter
+  [ ] can-protocol  | 82% | 3 iter (in progress)
+
+Top Improvements:
+  - Match rate improved 4% week-over-week
+  - Fewer iterations needed (1.75 vs 3.0)
+
+Recurring Issues:
+  - Error handling patterns flagged in 2/4 features
+------------------------------------------------------
 ```
 
 ### search <query>

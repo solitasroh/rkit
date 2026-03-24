@@ -90,6 +90,22 @@ across the entire development lifecycle.
 - Unvalidated redirects and forwards
 - Missing security headers (CSP, HSTS, X-Frame-Options)
 
+### Embedded STRIDE Threat Model
+
+When reviewing embedded projects (MCU/MPU/WPF), apply domain-specific STRIDE analysis:
+
+| STRIDE | MCU Threats | MPU Threats | WPF Threats |
+|--------|------------|------------|------------|
+| **Spoofing** | Firmware update forgery, bootloader tampering | Kernel module impersonation, shared library replacement (LD_PRELOAD), app binary tampering | Certificate forgery, DLL injection |
+| **Tampering** | Flash direct modification, OTP area | DT overlay tampering, /etc file modification | Config file modification, registry |
+| **Repudiation** | Sensor data denial, no logging | syslog deletion, no audit trail | EventLog not recorded |
+| **Info Disclosure** | JTAG/SWD port open, UART debug | /proc info exposure, core dump | Memory dump, serial sniffing |
+| **DoS** | Interrupt storm, watchdog trigger | fork bomb, OOM killer | UI thread blocking, port monopolization |
+| **EoP** | Stack overflow, MPU not configured | Kernel vulnerability, setuid misuse | UAC bypass, privilege escalation |
+
+**Confidence Threshold**: Only report findings with confidence >= 8/10.
+**False-Positive Exclusions**: Test keys, development-only debug ports, mock credentials in test files.
+
 ## v1.6.1 Feature Guidance
 
 - Skills 2.0: Skill Classification (Workflow/Capability/Hybrid), Skill Evals, hot reload

@@ -122,6 +122,37 @@ if (!blocked && (activeSkill === 'zero-script-qa' || activeAgent === 'qa-monitor
 }
 
 // ============================================================
+// v2.0.0: Guard Mode Enhanced Scrutiny
+// ============================================================
+if (!blocked) {
+  try {
+    const guardMode = require('../lib/control/guard-mode');
+    if (guardMode.isActive()) {
+      const dd = require('../lib/control/destructive-detector');
+      const toolInput = parseHookInput(input);
+      const result = dd.detect('Bash', { command: toolInput.command });
+      if (result.detected) {
+        // In guard mode, ALL detected rules trigger blocking (not just critical)
+        const audit = require('../lib/audit/audit-logger');
+        audit.writeAuditLog({
+          actor: 'hook', actorId: 'unified-bash-pre',
+          action: 'guard_mode_blocked', category: 'control',
+          target: toolInput.command?.substring(0, 100) || '', targetType: 'command',
+          details: { rules: result.rules.map(r => r.id), guardMode: true },
+          result: 'blocked', destructiveOperation: true
+        });
+        outputBlock(
+          `Guard mode active — destructive operation blocked:\n` +
+          result.rules.map(r => `  [${r.severity.toUpperCase()}] ${r.id}: ${r.name}`).join('\n') +
+          `\nDeactivate guard mode with /guard off to proceed.`
+        );
+        blocked = true;
+      }
+    }
+  } catch (_) {}
+}
+
+// ============================================================
 // v2.0.0: Destructive Detector (Control Module)
 // ============================================================
 if (!blocked) {

@@ -50,6 +50,7 @@ hooks:
 | `[file]` | Review specific file | `/code-review src/lib/auth.ts` |
 | `[directory]` | Review entire directory | `/code-review src/features/` |
 | `[pr]` | PR review (PR number) | `/code-review pr 123` |
+| `--auto-fix` | Auto-fix Minor/Major issues (L2+ only) | `/code-review src/ --auto-fix` |
 
 ## Review Categories
 
@@ -134,6 +135,21 @@ code-analyzer Agent uses confidence-based filtering:
 | High (90%+) | Always shown | Definite issues |
 | Medium (70-89%) | Selectively shown | Possible issues |
 | Low (<70%) | Hidden | Uncertain suggestions |
+
+## Auto-Fix Mode (--auto-fix)
+
+When `--auto-fix` flag is provided:
+
+1. **Requirement**: Automation level L2+ (Semi-Auto or higher)
+2. **Scope**: Only Minor and Major issues are auto-fixed
+3. **Critical issues**: Always require manual review (never auto-fixed)
+4. **Process**:
+   - Run normal code review first
+   - Present findings summary
+   - Auto-apply fixes for Minor/Major issues
+   - Re-run review to verify fixes
+   - Report remaining issues (Critical only)
+5. **Guard mode**: Auto-fix is disabled when guard mode is active
 
 ## PDCA Integration
 

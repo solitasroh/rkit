@@ -69,7 +69,9 @@ Display the current automation control state.
 1. Read runtime control state from `.bkit/runtime/control-state.json`
 2. Read trust score from `.bkit/state/trust-score.json`
 3. Read active guardrails from `lib/control/` configuration
-4. Display formatted status panel
+4. Read freeze status from `lib/control/freeze-manager.js`
+5. Read guard mode status from `lib/control/guard-mode.js`
+6. Display formatted status panel
 
 **Output Format**:
 ```
@@ -79,6 +81,8 @@ Trust Score      : 72/100
 Active Guardrails: 8/8
 Paused           : No
 Features Active  : 2/3
+Guard Mode       : Active (mcu, L2 cap)
+Freeze           : Active (6 patterns, preset: mcu)
 ---------------------------------------------------
 Guardrails:
   [ON] Destructive operation detection

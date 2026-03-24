@@ -69,7 +69,7 @@ claude
 
 | Component | Count | Description |
 |-----------|:-----:|-------------|
-| **Skills** | 44 | Domain knowledge, PDCA workflow, 9-phase pipeline, utilities |
+| **Skills** | 50 | Domain knowledge, PDCA workflow, safety, security, delivery |
 | **Agents** | 39 | AI specialists (fw-architect, linux-bsp-expert, wpf-architect, CTO, PM team...) |
 | **Hook Events** | 18 | Lifecycle automation (build, validation, PDCA, team, session...) |
 | **Output Styles** | 4 | Response formatting (learning, pdca-guide, embedded, pdca-embedded) |
@@ -95,6 +95,14 @@ claude
 - **XAML Binding Check**: Path extraction with [ObservableProperty] Source Generator support
 - **MVVM Validation**: Pattern compliance scoring (no View references in ViewModel)
 - **Serial Bridge**: MCU UART ↔ WPF SerialPort parameter consistency check
+
+### Safety & Quality (v0.6.0)
+- **File Freeze**: Domain preset protection (`/freeze preset mcu` — linker scripts, startup, HAL config)
+- **Guard Mode**: Unified safety (`/guard on` — freeze + L2 cap + destructive blocking)
+- **Architecture Lock**: Design decision enforcement with Mermaid diagrams (`/arch-lock lock`)
+- **Embedded Challenge Protocol**: 21-question pre-PDCA methodology (`/reframe`)
+- **STRIDE Security Review**: Domain-specific threat modeling (`/security-review`)
+- **GitLab MR Automation**: `glab` CLI-based merge request creation (`/ship mr`)
 
 ## Requirements
 

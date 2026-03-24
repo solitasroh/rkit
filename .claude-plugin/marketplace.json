@@ -12,7 +12,7 @@
       "name": "mcukit",
       "source": "./",
       "description": "PDCA-driven MCU/MPU/WPF development with domain-specific AI agents",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "author": {
         "name": "solitasroh"
       },

@@ -65,14 +65,19 @@ cp .mcukit/CLAUDE.md ./CLAUDE.md
 
 플러그인을 이미 설치한 경우, 설치 방법에 따라 업데이트 절차가 다릅니다.
 
-#### Marketplace로 설치한 경우
+#### Marketplace로 설치한 경우 (GitHub 원격 소스)
 
 ```bash
 # Claude Code 세션에서 실행
-/plugin update mcukit
+/plugin uninstall mcukit@solitasroh-mcukit
+/plugin install mcukit@solitasroh-mcukit
 ```
 
-플러그인 캐시가 자동으로 최신 버전을 가져옵니다. Claude Code를 재시작하면 새 버전이 적용됩니다.
+Claude Code를 재시작하면 새 버전이 적용됩니다.
+
+> **참고**: 로컬 디렉토리를 마켓플레이스 소스로 등록한 경우, 플러그인 캐시가 설치 시점의
+> 스냅샷에 고정됩니다. `/plugin update`로 자동 갱신이 되지 않을 수 있으므로,
+> **재설치(uninstall → install)**를 권장합니다.
 
 #### 수동 클론으로 설치한 경우
 

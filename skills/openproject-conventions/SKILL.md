@@ -109,6 +109,14 @@ PDCA 없이 OP 도구를 직접 사용하는 것은 항상 허용.
 - "내 할당 작업" — list_work_packages (filter: assignee=me)
 - "기한 초과 작업" — list_work_packages (filter: overdue)
 
+### MR↔OP 연동 규칙
+
+- 브랜치명에 OP 번호 포함: `feature/op-{N}-{description}` 또는 `bugfix/op-{N}-{description}`
+- 커밋 prefix: `[OP#N] type: description` → GitLab↔OP 양쪽 이력
+- MR 제목: `[OP#N] type: description` → OP에서 MR 추적 가능
+- MR merge 후: OP 태스크 Closed + 시간 기록 제안
+- `/mr create` 시 브랜치명에서 `op-{N}` 자동 추출하여 MR 제목에 prefix 적용
+
 ### OP 미연결 시
 
 OpenProject MCP 서버에 연결되어 있지 않으면:

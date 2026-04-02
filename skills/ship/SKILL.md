@@ -49,7 +49,12 @@ task-template: "[Ship] {action}"
 
 ## Actions
 
-### mr {feature}
+### mr {feature} — `/mr create` 권장
+
+> **Note**: MR 생성은 `/mr create`를 사용하세요.
+> `/mr create`는 AI description 자동 생성, 리뷰어 지정, Draft 모드,
+> Conventional Comments 리뷰까지 전체 MR 라이프사이클을 지원합니다.
+> `/ship mr`은 하위 호환을 위해 유지되지만, 기본 MR 생성만 수행합니다.
 
 **Workflow**:
 

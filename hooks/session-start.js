@@ -81,47 +81,42 @@ try {
   debugLog('SessionStart', 'Session context failed', { error: e.message });
 }
 
-// --- 7. PDCA Dashboard ---
+// --- 7-9. PDCA Dashboard (Dual Output: terminal → stderr, context → additionalContext) ---
 let pdcaStatus = null;
 try {
-  const { renderPdcaProgressBar } = require('../lib/ui/progress-bar');
+  const ui = require('../lib/ui');
+  const { loadUiConfig } = require('../lib/ui/config-loader');
   const { getPdcaStatusFull } = require('../lib/pdca/status');
+  const config = loadUiConfig();
   pdcaStatus = getPdcaStatusFull();
+
   if (pdcaStatus && pdcaStatus.primaryFeature) {
-    const bar = renderPdcaProgressBar(pdcaStatus, { compact: false });
-    if (bar) additionalContext = bar + '\n\n' + additionalContext;
+    const data = { pdcaStatus, feature: pdcaStatus.primaryFeature };
+
+    // Terminal output (ANSI → stderr → user sees colored dashboard)
+    const terminalParts = [
+      ui.progressBar.terminal(data, config),
+      ui.workflowMap.terminal(data, config),
+      ui.controlPanel.terminal(data, config),
+    ].filter(Boolean);
+
+    if (terminalParts.length > 0) {
+      process.stderr.write(terminalParts.join('\n') + '\n');
+    }
+
+    // Context output (markdown → additionalContext → LLM reads clean text)
+    const contextParts = [
+      ui.progressBar.context(data, config),
+      ui.workflowMap.context(data, config),
+      ui.controlPanel.context(data, config),
+    ].filter(Boolean);
+
+    if (contextParts.length > 0) {
+      additionalContext = contextParts.join('\n\n') + '\n\n' + additionalContext;
+    }
   }
 } catch (e) {
   debugLog('SessionStart', 'PDCA dashboard failed', { error: e.message });
-}
-
-// --- 8. Workflow Map ---
-try {
-  const { renderWorkflowMap } = require('../lib/ui/workflow-map');
-  if (!pdcaStatus) {
-    const { getPdcaStatusFull } = require('../lib/pdca/status');
-    pdcaStatus = getPdcaStatusFull();
-  }
-  if (pdcaStatus && pdcaStatus.primaryFeature) {
-    const map = renderWorkflowMap(pdcaStatus, null, {
-      feature: pdcaStatus.primaryFeature,
-      showIteration: true,
-    });
-    if (map) additionalContext = map + '\n\n' + additionalContext;
-  }
-} catch (e) {
-  debugLog('SessionStart', 'Workflow map failed', { error: e.message });
-}
-
-// --- 9. Control Panel ---
-try {
-  const { renderControlPanel } = require('../lib/ui/control-panel');
-  if (pdcaStatus && pdcaStatus.primaryFeature) {
-    const panel = renderControlPanel(null, null, { showShortcuts: false, showApprovals: true });
-    if (panel) additionalContext = panel + '\n\n' + additionalContext;
-  }
-} catch (e) {
-  debugLog('SessionStart', 'Control panel failed', { error: e.message });
 }
 
 // --- 10. Stale Feature Detection ---

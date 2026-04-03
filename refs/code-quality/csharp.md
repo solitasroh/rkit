@@ -239,6 +239,188 @@ public class CreateOrderValidator : AbstractValidator<CreateOrderCommand>
 
 ---
 
+## LINQ & Expression Patterns
+
+**Expression-bodied members for single-expression methods:**
+```csharp
+// Bad — block body for trivial methods
+public string FullName { get { return $"{FirstName} {LastName}"; } }
+public override string ToString() { return $"Order #{Id}"; }
+
+// Good — expression body
+public string FullName => $"{FirstName} {LastName}";
+public override string ToString() => $"Order #{Id}";
+```
+
+**LINQ for declarative data transformation:**
+```csharp
+// Bad — imperative loop
+var activeNames = new List<string>();
+foreach (var u in users)
+    if (u.IsActive && u.Age >= 18)
+        activeNames.Add(u.Name.ToUpper());
+
+// Good — LINQ pipeline
+var activeNames = users
+    .Where(u => u.IsActive && u.Age >= 18)
+    .Select(u => u.Name.ToUpper())
+    .ToList();
+```
+
+**Pattern matching in LINQ:**
+```csharp
+// Filter + cast in one step
+var validOrders = items
+    .OfType<Order>()
+    .Where(o => o is { Status: OrderStatus.Confirmed, Total: > 0 })
+    .Select(o => o.ToDto());
+```
+
+## Lambda & Delegate Patterns
+
+**Lambda as strategy injection:**
+```csharp
+// Bad — interface + class for one-shot behavior
+interface ISortStrategy { IEnumerable<T> Sort<T>(IEnumerable<T> items); }
+class ByNameStrategy : ISortStrategy { /* ... */ }
+
+// Good — Func<T> as lightweight strategy
+public class DataGrid<T>(Func<IEnumerable<T>, IEnumerable<T>>? sortStrategy = null)
+{
+    public IEnumerable<T> GetSorted(IEnumerable<T> items)
+        => sortStrategy?.Invoke(items) ?? items;
+}
+// Usage
+var grid = new DataGrid<User>(users => users.OrderBy(u => u.Name));
+```
+
+**Local functions over private helper methods (when used once):**
+```csharp
+// Good — local function keeps logic close to usage
+public async Task<ErrorOr<Report>> GenerateReportAsync(int year)
+{
+    var data = await _repo.GetDataAsync(year);
+    if (data.Count == 0) return Error.NotFound("No data");
+
+    return BuildReport(data);
+
+    // Local function — not polluting class scope
+    static Report BuildReport(List<DataPoint> points)
+    {
+        var summary = points.GroupBy(p => p.Category)
+            .Select(g => new Section(g.Key, g.Average(p => p.Value)));
+        return new Report(summary);
+    }
+}
+```
+
+**Event handling with lambda (avoid verbose handlers):**
+```csharp
+// Bad — separate named handler for trivial logic
+button.Click += Button_Click;
+private void Button_Click(object s, EventArgs e) { _vm.SaveCommand.Execute(null); }
+
+// Good — inline lambda
+button.Click += (_, _) => _vm.SaveCommand.Execute(null);
+```
+
+## Advanced Pattern Matching
+
+**Exhaustive switch with discriminated union (record hierarchy):**
+```csharp
+// Define closed hierarchy
+public abstract record PaymentResult;
+public record PaymentSuccess(string TransactionId) : PaymentResult;
+public record PaymentDeclined(string Reason) : PaymentResult;
+public record PaymentError(Exception Ex) : PaymentResult;
+
+// Exhaustive handling — compiler warns if case missed
+public string Describe(PaymentResult result) => result switch
+{
+    PaymentSuccess s => $"Paid: {s.TransactionId}",
+    PaymentDeclined d => $"Declined: {d.Reason}",
+    PaymentError e => $"Error: {e.Ex.Message}",
+    _ => throw new UnreachableException()
+};
+```
+
+**Property pattern + relational pattern:**
+```csharp
+public decimal CalculateDiscount(Order order) => order switch
+{
+    { Total: > 1000, Customer.IsPremium: true } => order.Total * 0.2m,
+    { Total: > 500 } => order.Total * 0.1m,
+    { Items.Count: > 10 } => order.Total * 0.05m,
+    _ => 0m
+};
+```
+
+## DDD Building Blocks
+
+**Value Object with record:**
+```csharp
+// Immutable, equality by value, self-validating
+public record Email
+{
+    public string Value { get; }
+    public Email(string value)
+    {
+        if (!value.Contains('@')) throw new DomainException("Invalid email");
+        Value = value;
+    }
+}
+```
+
+**Aggregate Root — encapsulated collection + domain events (eShop pattern):**
+```csharp
+public class Order : Entity, IAggregateRoot
+{
+    public OrderStatus Status { get; private set; } = OrderStatus.Draft;
+    private readonly List<OrderItem> _items = [];
+    public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
+
+    public void AddItem(Product product, int quantity)
+    {
+        if (Status != OrderStatus.Draft)
+            throw new DomainException("Cannot modify confirmed order");
+        _items.Add(new OrderItem(product, quantity));
+    }
+
+    public void Confirm()
+    {
+        if (_items.Count == 0) throw new DomainException("Empty order");
+        Status = OrderStatus.Confirmed;
+        AddDomainEvent(new OrderConfirmedEvent(Id));
+    }
+}
+// Key: private set, private collection, events on state transition
+```
+
+**Smart Enum (type-safe, behavior-rich):**
+```csharp
+// Bad — string/int constants
+public const string StatusDraft = "draft";
+public const string StatusConfirmed = "confirmed";
+
+// Good — smart enum with behavior
+public abstract record OrderStatus(string Name)
+{
+    public static readonly OrderStatus Draft = new DraftStatus();
+    public static readonly OrderStatus Confirmed = new ConfirmedStatus();
+
+    public abstract bool CanTransitionTo(OrderStatus next);
+
+    private record DraftStatus() : OrderStatus("Draft")
+    {
+        public override bool CanTransitionTo(OrderStatus next) => next == Confirmed;
+    }
+    private record ConfirmedStatus() : OrderStatus("Confirmed")
+    {
+        public override bool CanTransitionTo(OrderStatus next) => false;
+    }
+}
+```
+
 ## Naming Conventions
 
 | Element | Convention | Example |
@@ -261,12 +443,134 @@ public class OrderService(IOrderRepository _orderRepository) : IOrderService
 
 ---
 
-## Reference Repos
+## Reference Repo Patterns (Pre-extracted)
 
-| Repository | Stars | Key Pattern |
-|-----------|-------|-------------|
-| `jasontaylordev/CleanArchitecture` | 20k | 4-layer template, MediatR, FluentValidation |
-| `ardalis/CleanArchitecture` | 18k | Specification pattern, domain events |
-| `dotnet/eShop` | 10k | Production DDD, microservices, .NET 8 |
-| `amantinband/clean-architecture` | 1.9k | ErrorOr pattern, functional error handling |
-| `CommunityToolkit/MVVM-Samples` | 1.4k | ObservableProperty, RelayCommand, Messenger |
+> When designing C# classes/modules, apply these patterns from real-world production repos.
+
+### jasontaylordev/CleanArchitecture (20k stars) — 4-Layer Structure
+
+**Pattern 1: DependencyInjection.cs per layer**
+```csharp
+// Each layer has its own registration extension method
+// Domain/DependencyInjection.cs — usually empty (pure domain)
+// Application/DependencyInjection.cs
+public static class DependencyInjection
+{
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        return services;
+    }
+}
+// Program.cs — clean composition root
+builder.Services.AddApplication().AddInfrastructure(builder.Configuration);
+```
+
+**Pattern 2: MediatR pipeline behaviors (cross-cutting concerns)**
+```csharp
+// Validation runs automatically before every handler
+public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
+    : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
+{
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
+    {
+        var context = new ValidationContext<TRequest>(request);
+        var failures = validators.Select(v => v.Validate(context))
+            .SelectMany(r => r.Errors).Where(f => f is not null).ToList();
+        if (failures.Count != 0) throw new ValidationException(failures);
+        return await next();
+    }
+}
+```
+
+**Apply this**: Every new layer → add `DependencyInjection.cs`. Cross-cutting (validation, logging, auth) → MediatR pipeline behavior, not manual checks in handlers.
+
+---
+
+### amantinband/error-or (2k stars) — Functional Error Handling
+
+**Pattern: ErrorOr<T> chaining with Then/Match**
+```csharp
+// Chain operations — error short-circuits automatically
+public async Task<ErrorOr<OrderDto>> CreateOrderAsync(CreateOrderCommand cmd)
+{
+    return await ValidateCommand(cmd)         // ErrorOr<ValidatedCmd>
+        .ThenAsync(v => _repo.CreateAsync(v)) // ErrorOr<Order>
+        .Then(order => order.ToDto());         // ErrorOr<OrderDto>
+}
+
+// Terminal — handle success or error
+var result = await CreateOrderAsync(cmd);
+return result.Match(
+    onValue: dto => Results.Created($"/orders/{dto.Id}", dto),
+    onFirstError: error => error.Type switch
+    {
+        ErrorType.NotFound => Results.NotFound(error.Description),
+        ErrorType.Validation => Results.BadRequest(error.Description),
+        _ => Results.Problem(error.Description)
+    }
+);
+```
+
+**Apply this**: Return `ErrorOr<T>` from use cases, not exceptions. Chain with `.Then()`. Map to HTTP responses in the controller layer with `.Match()`.
+
+---
+
+### dotnet/eShop (10k stars) — Production DDD
+
+**Pattern 1: Aggregate root with encapsulated collection**
+```csharp
+public class Order : Entity, IAggregateRoot
+{
+    // Private collection — external code cannot modify directly
+    private readonly List<OrderItem> _orderItems;
+    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
+
+    // State transitions raise domain events
+    public void SetPaidStatus()
+    {
+        if (OrderStatus != OrderStatus.Validated)
+            StatusChangeException(OrderStatus.Paid);
+        OrderStatus = OrderStatus.Paid;
+        AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(Id, _orderItems));
+    }
+}
+```
+
+**Pattern 2: Domain events dispatched after SaveChanges**
+```csharp
+// Events collected during domain operations, dispatched after persistence
+public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
+{
+    var result = await base.SaveChangesAsync(ct);
+    await DispatchDomainEventsAsync();  // publish after save succeeds
+    return result;
+}
+```
+
+**Apply this**: Collections always `private List<T>` + `IReadOnlyCollection<T>`. State changes via methods (not setters). Domain events after save, not during.
+
+---
+
+### CommunityToolkit/MVVM-Samples (1.4k stars) — MVVM Patterns
+
+**Pattern: Source-generated MVVM with zero boilerplate**
+```csharp
+public partial class MainViewModel : ObservableObject
+{
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FullName))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    private string _firstName = "";
+
+    public string FullName => $"{FirstName} {LastName}";
+
+    [RelayCommand(CanExecute = nameof(CanSave))]
+    private async Task SaveAsync() { /* ... */ }
+    private bool CanSave => !string.IsNullOrEmpty(FirstName);
+}
+```
+
+**Apply this**: Always use `[ObservableProperty]` over manual properties. Always use `[RelayCommand(CanExecute)]` — commands without CanExecute are incomplete.

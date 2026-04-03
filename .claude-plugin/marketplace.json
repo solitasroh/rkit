@@ -12,7 +12,7 @@
       "name": "rkit",
       "source": "./",
       "description": "PDCA-driven MCU/MPU/WPF development with 41 agents, 70 skills, MCU critical analysis, code quality enforcement, STM32MP Yocto workflow",
-      "version": "0.8.0",
+      "version": "0.9.0",
       "author": {
         "name": "solitasroh"
       },

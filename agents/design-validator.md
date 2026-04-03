@@ -23,9 +23,6 @@ linked-from-skills:
   - phase-8-review: validate
 imports:
   - ${PLUGIN_ROOT}/templates/shared/api-patterns.md
-  - ${PLUGIN_ROOT}/refs/code-quality/common.md
-  - ${PLUGIN_ROOT}/refs/code-quality/cpp.md
-  - ${PLUGIN_ROOT}/refs/code-quality/csharp.md
 context: fork
 mergeResult: false
 memory: project

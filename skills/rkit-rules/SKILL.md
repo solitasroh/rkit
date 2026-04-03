@@ -13,8 +13,6 @@ user-invocable: false
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
 imports:
   - ${PLUGIN_ROOT}/refs/code-quality/common.md
-  - ${PLUGIN_ROOT}/refs/code-quality/cpp.md
-  - ${PLUGIN_ROOT}/refs/code-quality/csharp.md
 ---
 
 # rkit Core Rules
@@ -76,12 +74,26 @@ Apply these rules whenever generating code, regardless of domain.
 4. Did I reuse existing project code, or write from scratch?
 5. Is every function under 40 lines and under 3 params?
 
-### Language-Specific Rules
-When writing code, read the matching reference from refs/code-quality/:
-- **C/C++**: `refs/code-quality/cpp.md` — RAII, ownership, enum class, no raw new/delete
-- **C#**: `refs/code-quality/csharp.md` — MVVM boundaries, DI, async Task, ObservableCollection
-- **TypeScript**: `refs/code-quality/typescript.md` — No any, const default, named exports
-- **Python**: `refs/code-quality/python.md` — Type hints, @dataclass, Protocol, pytest
+### Language-Specific Rules (MANDATORY)
+
+<HARD-RULE>
+Before writing or designing any code, you MUST use the Read tool to load the matching
+language reference. Apply the patterns, modern idioms, and reference repo styles from that document.
+This is not optional — skipping this produces structurally poor code.
+</HARD-RULE>
+
+| File Extension | Read This Reference | Key Patterns |
+|----------------|-------------------|--------------|
+| `.c`, `.cpp`, `.h`, `.hpp` | `refs/code-quality/cpp.md` | RAII, ownership semantics, concepts, Modern C++17/20 |
+| `.cs` | `refs/code-quality/csharp.md` | Clean Architecture layers, ErrorOr, Modern C# 12 |
+| `.ts`, `.tsx`, `.js` | `refs/code-quality/typescript.md` | Result pattern, feature-based modules, Modern TS 5.x |
+| `.py` | `refs/code-quality/python.md` | Protocol, frozen dataclass, async TaskGroup, Modern 3.12 |
+
+Each reference contains:
+- Bad/Good code pairs (follow the Good patterns)
+- Modern language idioms (use these, not legacy patterns)
+- Reference repositories (study these for code style)
+- Anti-patterns (avoid these explicitly)
 
 ## 4. Domain Code Quality Standards
 

@@ -3,16 +3,10 @@ name: rkit-rules
 classification: workflow
 classification-reason: "Core development rules for embedded/desktop PDCA workflow"
 deprecation-risk: none
-description: |
-  Core rules for rkit plugin. PDCA methodology, domain detection,
-  agent auto-triggering, and embedded code quality standards.
-
-  Triggers: rkit, PDCA, develop, implement, feature, driver, firmware,
-  code, class, function, module, design, create, write, build, refactor, architecture,
-  개발, 기능, 드라이버, 펌웨어, 커널, WPF, MVVM,
-  코드, 클래스, 함수, 모듈, 설계, 디자인, 작성, 만들어, 구현, 리팩터,
-  コード, クラス, 関数, 設計, 実装, 作成,
-  代码, 类, 函数, 设计, 实现, 创建
+description: >
+  Triggers: code, class, function, design, create, write, implement, refactor,
+  코드, 클래스, 함수, 설계, 구현, 만들어, rkit, PDCA, develop, feature.
+  Code quality + PDCA rules. MUST Read before writing code.
 user-invocable: false
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
 imports:

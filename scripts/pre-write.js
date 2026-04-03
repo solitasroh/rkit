@@ -209,6 +209,25 @@ if (isCodeFile(filePath)) {
 }
 
 // ============================================================
+// 4.5. Code Structure Quality (v0.9.1 - Always inject for code files)
+// ============================================================
+if (isCodeFile(filePath)) {
+  const ext = require('path').extname(filePath).toLowerCase();
+  const langRef = {
+    '.c': 'cpp', '.cpp': 'cpp', '.h': 'cpp', '.hpp': 'cpp', '.cc': 'cpp',
+    '.cs': 'csharp', '.ts': 'typescript', '.tsx': 'typescript',
+    '.js': 'typescript', '.jsx': 'typescript', '.py': 'python',
+  }[ext];
+  const refPath = langRef ? `refs/code-quality/${langRef}.md` : null;
+  contextParts.push(
+    'CODE QUALITY: Functions<=40 lines, params<=3, nesting<=3. ' +
+    'Single responsibility. Inject dependencies. Reuse existing code. ' +
+    'Apply design patterns from reference repos.' +
+    (refPath ? ` MUST Read ${refPath} before writing.` : '')
+  );
+}
+
+// ============================================================
 // 5. Task System Guidance (v1.3.1 - FR-02)
 // ============================================================
 if (feature && (pdcaLevel === 'recommended' || pdcaLevel === 'required')) {

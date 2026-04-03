@@ -23,6 +23,7 @@ linked-from-skills:
   - phase-8-review: gap
 imports:
   - ${PLUGIN_ROOT}/templates/shared/api-patterns.md
+  - ${PLUGIN_ROOT}/refs/code-quality/common.md
 context: fork
 mergeResult: false
 memory: project

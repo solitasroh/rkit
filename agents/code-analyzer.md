@@ -25,6 +25,9 @@ linked-from-skills:
 imports:
   - ${PLUGIN_ROOT}/templates/shared/error-handling-patterns.md
   - ${PLUGIN_ROOT}/templates/shared/naming-conventions.md
+  - ${PLUGIN_ROOT}/refs/code-quality/common.md
+  - ${PLUGIN_ROOT}/refs/code-quality/cpp.md
+  - ${PLUGIN_ROOT}/refs/code-quality/csharp.md
 skills_preload:
   - phase-2-convention
   - phase-8-review

@@ -1,0 +1,12 @@
+name: "cc-version-analysis"
+classification: "workflow"
+version: "2.0.0"
+evals:
+  - name: "trigger-accuracy"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must trigger correctly on version/upgrade keywords"
+      - "Must follow defined analysis process steps"
+      - "Must produce impact report output"
+    timeout: 60000

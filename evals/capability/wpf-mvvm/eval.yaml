@@ -1,12 +1,12 @@
 name: "wpf-mvvm"
 classification: "capability"
-version: "0.4.0"
+version: "2.0.0"
 evals:
-  - name: "basic-usage"
+  - name: "sensor-viewmodel-toolkit"
     prompt: "prompt-1.md"
     expected: "expected-1.md"
     criteria:
-      - "Correct API/pattern usage"
-      - "Domain-specific best practices"
-      - "No common pitfalls"
+      - "Must produce ViewModel code implementation"
+      - "Must follow MVVM data binding pattern design steps"
+      - "No common WPF binding pitfalls"
     timeout: 60000

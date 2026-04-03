@@ -206,6 +206,51 @@ function evaluateAgainstCriteria(prompt, expected, criteria) {
       } else {
         failedCriteria.push(criterion);
       }
+    } else if (criterionLower.includes('code') || criterionLower.includes('implement')) {
+      const hasCode = expected.includes('```') || expected.includes('function') ||
+                       expected.includes('void') || expected.includes('class') ||
+                       expected.includes('def') || expected.includes('const');
+      if (hasCode) {
+        matchedCriteria.push(criterion);
+      } else {
+        failedCriteria.push(criterion);
+      }
+    } else if (criterionLower.includes('safety') || criterionLower.includes('security') || criterionLower.includes('vulnerability')) {
+      const hasSafety = expected.includes('MISRA') || expected.includes('OWASP') ||
+                         expected.includes('CVE') || expected.includes('validation') ||
+                         expected.includes('sanitize') || expected.includes('security');
+      if (hasSafety) {
+        matchedCriteria.push(criterion);
+      } else {
+        failedCriteria.push(criterion);
+      }
+    } else if (criterionLower.includes('architecture') || criterionLower.includes('design') || criterionLower.includes('layer')) {
+      const hasArch = expected.includes('layer') || expected.includes('module') ||
+                       expected.includes('component') || expected.includes('interface') ||
+                       expected.includes('diagram') || expected.includes('architecture');
+      if (hasArch) {
+        matchedCriteria.push(criterion);
+      } else {
+        failedCriteria.push(criterion);
+      }
+    } else if (criterionLower.includes('api') || criterionLower.includes('endpoint') || criterionLower.includes('protocol')) {
+      const hasApi = expected.includes('GET') || expected.includes('POST') ||
+                      expected.includes('request') || expected.includes('response') ||
+                      expected.includes('serial') || expected.includes('packet');
+      if (hasApi) {
+        matchedCriteria.push(criterion);
+      } else {
+        failedCriteria.push(criterion);
+      }
+    } else if (criterionLower.includes('config') || criterionLower.includes('setup') || criterionLower.includes('initialize')) {
+      const hasConfig = expected.includes('config') || expected.includes('setup') ||
+                         expected.includes('.yaml') || expected.includes('.json') ||
+                         expected.includes('CMake') || expected.includes('Makefile');
+      if (hasConfig) {
+        matchedCriteria.push(criterion);
+      } else {
+        failedCriteria.push(criterion);
+      }
     } else {
       // Generic: check if expected has substantive content
       if (expected.length >= 100 && expected.split('\n').length >= 5) {

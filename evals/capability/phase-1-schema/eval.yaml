@@ -1,0 +1,11 @@
+name: "phase-1-schema"
+classification: "capability"
+version: "2.0.0"
+evals:
+  - name: "i2c-sensor-register-map-uart-protocol"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must produce register map and protocol data structure design output"
+      - "Must follow schema definition process steps"
+    timeout: 60000

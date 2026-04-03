@@ -1,12 +1,12 @@
 name: "misra-c"
 classification: "workflow"
-version: "0.4.0"
+version: "2.0.0"
 evals:
-  - name: "basic-usage"
+  - name: "violation-analysis-report"
     prompt: "prompt-1.md"
     expected: "expected-1.md"
     criteria:
-      - "Correct API/pattern usage"
-      - "Domain-specific best practices"
-      - "No common pitfalls"
+      - "Must trigger correctly on MISRA/safety keywords"
+      - "Must follow defined code analysis process steps"
+      - "Must produce violation report with safety classification output"
     timeout: 60000

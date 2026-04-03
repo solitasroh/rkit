@@ -1,0 +1,12 @@
+name: "desktop-app"
+classification: "capability"
+version: "2.0.0"
+evals:
+  - name: "wpf-serial-monitor-project-setup"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must produce WPF/WinUI3 project setup configuration output"
+      - "Must follow MVVM architecture design steps"
+      - "No common C# desktop app pitfalls"
+    timeout: 60000

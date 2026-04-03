@@ -1,0 +1,19 @@
+name: "zero-script-qa"
+classification: "workflow"
+version: "2.0.0"
+evals:
+  - name: "trigger-accuracy"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must trigger correctly on QA/testing keywords"
+      - "Must follow defined log analysis process steps"
+      - "Must produce structured test report output"
+    timeout: 60000
+  - name: "docker-log-analysis"
+    prompt: "prompt-2.md"
+    expected: "expected-2.md"
+    criteria:
+      - "Must follow log collection process steps"
+      - "Must produce issue detection output from logs"
+    timeout: 60000

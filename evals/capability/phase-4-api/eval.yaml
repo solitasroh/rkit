@@ -1,0 +1,11 @@
+name: "phase-4-api"
+classification: "capability"
+version: "2.0.0"
+evals:
+  - name: "mcu-pc-serial-command-protocol"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must produce serial command/response protocol endpoint definitions"
+      - "Must follow protocol design process steps"
+    timeout: 60000

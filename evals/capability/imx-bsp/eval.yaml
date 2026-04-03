@@ -1,12 +1,11 @@
 name: "imx-bsp"
 classification: "capability"
-version: "0.4.0"
+version: "2.0.0"
 evals:
-  - name: "basic-usage"
+  - name: "uart-i2c-device-tree"
     prompt: "prompt-1.md"
     expected: "expected-1.md"
     criteria:
-      - "Correct API/pattern usage"
-      - "Domain-specific best practices"
-      - "No common pitfalls"
+      - "Must produce Device Tree node configuration output"
+      - "Must follow BSP porting process steps"
     timeout: 60000

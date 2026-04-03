@@ -1,0 +1,11 @@
+name: "phase-9-deployment"
+classification: "capability"
+version: "2.0.0"
+evals:
+  - name: "stm32-flash-imx6-sdcard-deployment"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must follow firmware deployment process steps"
+      - "Must produce flash/image deployment configuration output"
+    timeout: 60000

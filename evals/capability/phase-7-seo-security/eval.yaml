@@ -1,0 +1,11 @@
+name: "phase-7-seo-security"
+classification: "capability"
+version: "2.0.0"
+evals:
+  - name: "firmware-ota-security-review"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must follow OTA security review process steps"
+      - "Must check for firmware update security vulnerabilities"
+    timeout: 60000

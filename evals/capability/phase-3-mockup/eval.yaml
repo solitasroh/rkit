@@ -1,0 +1,11 @@
+name: "phase-3-mockup"
+classification: "capability"
+version: "2.0.0"
+evals:
+  - name: "sensor-monitoring-wpf-dashboard"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must produce UI component layout design output"
+      - "Must follow MVVM mockup design pattern steps"
+    timeout: 60000

@@ -1,0 +1,11 @@
+name: "phase-6-ui-integration"
+classification: "capability"
+version: "2.0.0"
+evals:
+  - name: "viewmodel-serialport-binding"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must produce ViewModel-SerialPort integration code implementation"
+      - "Must follow MVVM data binding process steps"
+    timeout: 60000

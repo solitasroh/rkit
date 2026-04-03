@@ -1,0 +1,11 @@
+name: "phase-5-design-system"
+classification: "capability"
+version: "2.0.0"
+evals:
+  - name: "mcu-control-wpf-component-library"
+    prompt: "prompt-1.md"
+    expected: "expected-1.md"
+    criteria:
+      - "Must produce WPF/WinUI3 component design with style/template output"
+      - "Must follow design system architecture layer definition steps"
+    timeout: 60000

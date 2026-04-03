@@ -1,12 +1,11 @@
 name: "xaml-design"
 classification: "capability"
-version: "0.4.0"
+version: "2.0.0"
 evals:
-  - name: "basic-usage"
+  - name: "sensor-data-template-style"
     prompt: "prompt-1.md"
     expected: "expected-1.md"
     criteria:
-      - "Correct API/pattern usage"
-      - "Domain-specific best practices"
-      - "No common pitfalls"
+      - "Must produce XAML style/template output"
+      - "Must follow ResourceDictionary design pattern steps"
     timeout: 60000

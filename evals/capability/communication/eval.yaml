@@ -1,12 +1,11 @@
 name: "communication"
 classification: "capability"
-version: "0.4.0"
+version: "2.0.0"
 evals:
-  - name: "basic-usage"
+  - name: "multi-protocol-dma-driver"
     prompt: "prompt-1.md"
     expected: "expected-1.md"
     criteria:
-      - "Correct API/pattern usage"
-      - "Domain-specific best practices"
-      - "No common pitfalls"
+      - "Must produce communication driver code implementation"
+      - "Must follow DMA/interrupt protocol process steps"
     timeout: 60000

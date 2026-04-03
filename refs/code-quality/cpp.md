@@ -63,6 +63,61 @@ std::ranges::copy(items | std::views::filter(&Item::active)
 - Rule of Five: define destructor → define or delete all five.
 - Never `std::move` in a `return` — it prevents NRVO.
 
+## Lambda Patterns
+
+**Callback with template (zero-overhead) vs std::function (type-erased):**
+```cpp
+// Bad — always using std::function (heap alloc, indirection)
+void forEach(const std::vector<int>& v, std::function<void(int)> fn);
+
+// Good — template for hot path (inlined, zero overhead)
+template <typename F>
+void forEach(const std::vector<int>& v, F&& fn) {
+    for (auto x : v) fn(x);
+}
+// Use std::function only when you need to STORE the callable (member variable, container)
+```
+
+**IILE (Immediately Invoked Lambda) for complex const init:**
+```cpp
+// Bad — mutable temp variable
+std::string msg;
+if (error) msg = "failed: " + reason;
+else msg = "ok";
+
+// Good — const via IILE
+const auto msg = [&] {
+    if (error) return "failed: " + reason;
+    return std::string("ok");
+}();
+```
+
+**Generic lambda (auto params) for algorithm predicates:**
+```cpp
+// Bad — explicit type
+std::sort(v.begin(), v.end(), [](const Widget& a, const Widget& b) { return a.name < b.name; });
+
+// Good — generic, reusable
+auto byName = [](const auto& a, const auto& b) { return a.name < b.name; };
+std::ranges::sort(widgets, byName);
+std::ranges::sort(employees, byName);  // works for any type with .name
+```
+
+**Move capture for non-copyable objects:**
+```cpp
+auto ptr = std::make_unique<Config>(load());
+// Bad — won't compile, unique_ptr is non-copyable
+auto fn = [ptr] { use(*ptr); };
+
+// Good — move into lambda
+auto fn = [ptr = std::move(ptr)] { use(*ptr); };
+```
+
+**Lambda capture rules:**
+- Local scope (passed to algorithm): capture by `[&]` reference — safe, no dangling
+- Stored / returned / threaded: capture by `[=]` value or move — avoids dangling
+- Never `[=]` when capturing `this` — use `[*this]` for value copy of the object
+
 ## Error Handling
 ```cpp
 // Bad — silent swallow
@@ -209,6 +264,145 @@ public:
     std::string build() const { return std::format("SELECT * FROM {} WHERE {}", table_, where_); }
 };
 auto q = QueryBuilder{}.from("users").where("active=1").build();
+```
+
+**Visitor with std::variant + std::visit (replace inheritance hierarchies):**
+```cpp
+// Bad — virtual inheritance for closed set of types
+class Shape { public: virtual double area() = 0; };
+class Circle : public Shape { /* ... */ };
+class Rect : public Shape { /* ... */ };
+
+// Good — variant + visit (value semantics, no heap, no vtable)
+using Shape = std::variant<Circle, Rect, Triangle>;
+
+// Overload pattern (C++17) — combine multiple lambdas into one visitor
+template <class... Ts> struct overload : Ts... { using Ts::operator()...; };
+
+double area(const Shape& s) {
+    return std::visit(overload{
+        [](const Circle& c)   { return std::numbers::pi * c.r * c.r; },
+        [](const Rect& r)     { return r.w * r.h; },
+        [](const Triangle& t) { return 0.5 * t.base * t.height; },
+    }, s);
+}
+// Adding a new type to variant → compiler forces all visitors to handle it
+```
+
+**Type Erasure (value-semantic polymorphism without inheritance):**
+```cpp
+// Concept: hide the concrete type behind a uniform interface
+// std::function is the canonical example — stores any callable
+// Build your own for domain-specific needs:
+class Drawable {
+    struct Concept {
+        virtual ~Concept() = default;
+        virtual void draw() const = 0;
+        virtual std::unique_ptr<Concept> clone() const = 0;
+    };
+    template <typename T>
+    struct Model : Concept {
+        T obj_;
+        explicit Model(T obj) : obj_(std::move(obj)) {}
+        void draw() const override { obj_.draw(); }
+        std::unique_ptr<Concept> clone() const override {
+            return std::make_unique<Model>(*this);
+        }
+    };
+    std::unique_ptr<Concept> pimpl_;
+public:
+    template <typename T>
+    Drawable(T obj) : pimpl_(std::make_unique<Model<T>>(std::move(obj))) {}
+    void draw() const { pimpl_->draw(); }
+};
+// Any type with a draw() method works — no base class needed
+```
+
+**Policy-Based Design (compile-time strategy injection):**
+```cpp
+// Bad — runtime strategy with virtual
+class Logger { virtual void write(std::string_view) = 0; };
+
+// Good — policy template (zero overhead, resolved at compile time)
+template <typename OutputPolicy, typename FormatPolicy>
+class Logger : private OutputPolicy, private FormatPolicy {
+public:
+    template <typename... Args>
+    void log(std::format_string<Args...> fmt, Args&&... args) {
+        auto msg = FormatPolicy::format(fmt, std::forward<Args>(args)...);
+        OutputPolicy::write(msg);
+    }
+};
+
+struct ConsoleOutput { static void write(std::string_view msg) { std::cout << msg << '\n'; } };
+struct TimestampFormat {
+    template <typename... Args>
+    static std::string format(std::format_string<Args...> fmt, Args&&... args) {
+        return std::format("[{}] {}", /* now */, std::format(fmt, std::forward<Args>(args)...));
+    }
+};
+using AppLogger = Logger<ConsoleOutput, TimestampFormat>;
+```
+
+**Deducing This (C++23) — replace CRTP and const/non-const overloads:**
+```cpp
+// Bad — CRTP boilerplate for static polymorphism
+template <typename Derived>
+struct Base {
+    void interface() { static_cast<Derived*>(this)->impl(); }
+};
+
+// Good — deducing this (C++23)
+struct Base {
+    void interface(this auto&& self) { self.impl(); }
+};
+struct Derived : Base {
+    void impl() { /* ... */ }
+};
+
+// Also eliminates const/non-const overload duplication:
+struct Container {
+    auto&& at(this auto&& self, size_t i) { return self.data_[i]; }
+    // One function handles both const and non-const access
+};
+```
+
+**std::generator (C++23 coroutine):**
+```cpp
+// Bad — manual iterator class for lazy sequence
+class FibIterator { /* 50 lines of boilerplate */ };
+
+// Good — coroutine generator
+std::generator<int> fibonacci() {
+    int a = 0, b = 1;
+    while (true) {
+        co_yield a;
+        std::tie(a, b) = std::pair{b, a + b};
+    }
+}
+
+// Compose with ranges
+for (auto n : fibonacci() | std::views::take(10) | std::views::filter(is_even)) {
+    std::cout << n << '\n';
+}
+```
+
+**Fold Expressions (C++17) — variadic template operations:**
+```cpp
+// Bad — recursive template instantiation
+template <typename T> T sum(T v) { return v; }
+template <typename T, typename... Args> T sum(T first, Args... rest) { return first + sum(rest...); }
+
+// Good — fold expression
+template <typename... Args>
+auto sum(Args... args) { return (... + args); }
+
+// Print all args with separator
+template <typename... Args>
+void print(Args&&... args) {
+    ((std::cout << args << ' '), ...);
+    std::cout << '\n';
+}
 ```
 
 ---

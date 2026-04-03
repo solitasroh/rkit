@@ -1,6 +1,5 @@
 # rkit runtime state (session-specific, not versioned)
 .bkit/
-.mcukit/
 .rkit/
 
 # Node

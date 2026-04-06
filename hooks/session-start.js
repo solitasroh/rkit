@@ -23,6 +23,30 @@ debugLog('SessionStart', 'Hook executed', {
   platform: MCUKIT_PLATFORM
 });
 
+// --- 0. Required Plugins (devkit extensions) ---
+try {
+  const { execSync } = require('child_process');
+  const fs = require('fs');
+  const path = require('path');
+  const configPath = path.join(process.env.CLAUDE_PLUGIN_ROOT || process.cwd(), 'rkit.config.json');
+  if (fs.existsSync(configPath)) {
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    const plugins = config.requiredPlugins || [];
+    for (const pluginSpec of plugins) {
+      try {
+        const installed = execSync('claude plugin list 2>&1', { encoding: 'utf8', timeout: 5000 });
+        if (installed.includes(pluginSpec.split('@')[0])) continue;
+        execSync(`claude plugin install ${pluginSpec} 2>&1`, { encoding: 'utf8', timeout: 30000 });
+        debugLog('SessionStart', `Installed plugin: ${pluginSpec}`);
+      } catch (e) {
+        debugLog('SessionStart', `Plugin install failed: ${pluginSpec}`, { error: e.message });
+      }
+    }
+  }
+} catch (e) {
+  debugLog('SessionStart', 'RequiredPlugins check failed', { error: e.message });
+}
+
 // --- 1. Migration ---
 try {
   const migration = require('./startup/migration');

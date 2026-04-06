@@ -8,6 +8,7 @@ description: |
   Combines intent discovery from brainstorming methodology with rkit PDCA's structured planning.
   Produces higher-quality Plan documents by exploring user intent, comparing alternatives,
   and applying YAGNI review before document generation.
+  Mermaid 다이어그램을 적극 활용하여 기획 구조를 시각화한다.
 
   Use proactively when user mentions planning with brainstorming, intent discovery,
   exploring alternatives, or wants a more thorough planning process.
@@ -39,6 +40,7 @@ allowed-tools:
 imports:
   - ${PLUGIN_ROOT}/templates/plan-plus.template.md
   - ${PLUGIN_ROOT}/skills/rkit-rules/SKILL.md
+  - ${PLUGIN_ROOT}/skills/mermaid/SKILL.md
 next-skill: pdca design
 pdca-phase: plan
 task-template: "[Plan Plus] {feature}"

@@ -6,9 +6,12 @@ domain: mpu
 platforms: [stm32mp]
 description: |
   하드웨어 회로도/데이터시트 분석 → DTS/defconfig/드라이버 매핑 스킬.
+  Mermaid 다이어그램을 적극 활용하여 하드웨어 블록과 핀 매핑을 시각화한다.
   Triggers: 회로도 분석, 핀맵, DTS 생성, schematic, datasheet, hw analysis
 user-invocable: true
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
+imports:
+  - ${PLUGIN_ROOT}/skills/mermaid/SKILL.md
 pdca-phase: do
 ---
 # Hardware Analysis

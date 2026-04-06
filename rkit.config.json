@@ -57,7 +57,7 @@
   },
 
   "mpu": {
-    "platforms": ["imx6", "imx6ull", "imx28"],
+    "platforms": ["imx6", "imx6ull", "imx28", "stm32mp"],
     "buildSystem": "yocto",
     "crossCompiler": "auto",
     "imageLimits": {
@@ -84,6 +84,11 @@
     "confidenceThreshold": 0.7,
     "clarifyAmbiguity": true
   },
+
+  "requiredPlugins": [
+    "ralph-loop@claude-plugins-official",
+    "skill-creator@claude-plugins-official"
+  ],
 
   "featurePatterns": [
     "drivers", "peripherals", "hal", "modules",

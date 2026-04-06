@@ -179,19 +179,27 @@ variables:
 | {TypeA} | Domain | `src/types/{feature}.ts` | ✅ |
 | {ApiClient} | Infrastructure | `src/lib/api/{feature}.ts` | ✅ |
 
-### 6.4 Architecture Score
+### 6.4 Architecture Score (M11)
+
+Calculate **Architecture Compliance (M11)** objectively based on the following 5 constraints (20 points each, 100 max):
+
+| Heuristic Constraint (20 pts each) | Evaluation | Score |
+|------------------------------------|------------|-------|
+| **1. Isolation** | Domain logic is completely independent of external I/O (DB, HTTP, UI)? | 0/20 |
+| **2. Dependency Inversion** | High-level modules use `<<Interface>>` or abstractions instead of concrete imports? | 0/20 |
+| **3. Zero Circular Dependency** | NO circular/bidirectional dependencies (A ↔ B) exist in the subsystem? | 0/20 |
+| **4. DRY & Reuse** | Existing structural elements were reused instead of wildly reinvented? | 0/20 |
+| **5. Pattern Adherence** | GoF stereotypes match their actual topological connections and enforce Single Responsibility? | 0/20 |
 
 ```
 ┌─────────────────────────────────────────────┐
-│  Architecture Compliance: 85%                │
+│  Architecture Compliance: {Total_M11}%       │
 ├─────────────────────────────────────────────┤
-│  ✅ Correct layer placement: 17/20 files     │
-│  ⚠️ Dependency violations:   2 files         │
-│  ❌ Wrong layer:              1 file         │
+│  ✅ Total Heuristics Passed: {Score}/100     │
+│  ⚠️ Missing Patterns/Violations: {Details}   │
 └─────────────────────────────────────────────┘
 ```
 
----
 
 ## 7. Convention Compliance
 

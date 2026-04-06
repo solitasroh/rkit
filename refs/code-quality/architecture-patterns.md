@@ -25,69 +25,44 @@ When outputting a Mermaid diagram, you MUST use `subgraph` to encapsulate struct
 ### Example: Clean Layered Architecture (WPF / Web)
 
 ```mermaid
-classDiagram
+flowchart TD
     subgraph PresentationLayer ["Presentation Layer"]
-        class LoginViewModel {
-            <<ViewModel>>
-            +AuthenticateCommand
-            -ILoginService loginService
-        }
-        class LoginWindow {
-            <<View>>
-            -InitializeComponent()
-        }
-        LoginWindow ..> LoginViewModel : "Binding"
+        LoginWindow["LoginWindow\n<<View>>"]
+        LoginViewModel["LoginViewModel\n<<ViewModel>>"]
     end
+    LoginWindow -.->|"Binding"| LoginViewModel
 
     subgraph ApplicationLayer ["Application Layer"]
-        class ILoginService {
-            <<Interface>>
-            +Login(cred: Credentials) Result
-        }
-        class AuthManager {
-            <<Mediator>>
-            +Login()
-        }
-        LoginViewModel --> ILoginService : "Depends on"
-        AuthManager ..|> ILoginService : "Implements"
+        ILoginService["ILoginService\n<<Interface>>"]
+        AuthManager["AuthManager\n<<Mediator>>"]
     end
+    LoginViewModel -->|"Depends on"| ILoginService
+    AuthManager -.->|"Implements"| ILoginService
 
     subgraph InfrastructureLayer ["Infrastructure Layer"]
-        class RestApiClient {
-            <<Strategy>>
-            -httpClient
-        }
-        AuthManager --> RestApiClient : "Uses for I/O"
+        RestApiClient["RestApiClient\n<<Strategy>>"]
     end
+    AuthManager -->|"Uses for I/O"| RestApiClient
 ```
 
 ### Example: Firmware / MCU Architecture (Low-Level)
 
 ```mermaid
-classDiagram
+flowchart TD
     subgraph ApplicationLogic ["Application Logic (App)"]
-        class MotorController {
-            <<Controller>>
-            -IMotorDriver
-            +ProcessStep()
-        }
+        MotorController["MotorController\n<<Controller>>"]
     end
 
     subgraph HardwareAbstraction ["Hardware Abstraction (HAL)"]
-        class IMotorDriver {
-            <<Interface>>
-            +SetPWM(duty: uint8)
-        }
+        IMotorDriver["IMotorDriver\n<<Interface>>"]
     end
 
     subgraph BoardSupportPackage ["Board Support Package (BSP)"]
-        class STM32_PWM_Driver {
-            <<Singleton>>
-            +SetPWM()
-        }
-        STM32_PWM_Driver ..|> IMotorDriver
-        MotorController --> IMotorDriver : "IoC Constraint"
+        STM32_PWM_Driver["STM32_PWM_Driver\n<<Singleton>>"]
     end
+    
+    STM32_PWM_Driver -.->|"Implements"| IMotorDriver
+    MotorController -->|"IoC Constraint"| IMotorDriver
 ```
 
 ---

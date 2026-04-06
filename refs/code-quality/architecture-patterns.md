@@ -26,31 +26,35 @@ When outputting a Mermaid diagram, you MUST use `subgraph` to encapsulate struct
 
 ```mermaid
 classDiagram
-    subgraph Presentation Layer
-        class LoginViewModel~ViewModel~ {
+    subgraph PresentationLayer ["Presentation Layer"]
+        class LoginViewModel {
+            <<ViewModel>>
             +AuthenticateCommand
             -ILoginService loginService
         }
-        class LoginWindow~View~ {
+        class LoginWindow {
+            <<View>>
             -InitializeComponent()
         }
         LoginWindow ..> LoginViewModel : "Binding"
     end
 
-    subgraph Application Layer
-        class ILoginService~Interface~ {
+    subgraph ApplicationLayer ["Application Layer"]
+        class ILoginService {
             <<Interface>>
             +Login(cred: Credentials) Result
         }
-        class AuthManager~Mediator~ {
+        class AuthManager {
+            <<Mediator>>
             +Login()
         }
         LoginViewModel --> ILoginService : "Depends on"
         AuthManager ..|> ILoginService : "Implements"
     end
 
-    subgraph Infrastructure Layer
-        class RestApiClient~Strategy~ {
+    subgraph InfrastructureLayer ["Infrastructure Layer"]
+        class RestApiClient {
+            <<Strategy>>
             -httpClient
         }
         AuthManager --> RestApiClient : "Uses for I/O"
@@ -61,22 +65,23 @@ classDiagram
 
 ```mermaid
 classDiagram
-    subgraph Application Logic (App)
-        class MotorController~Controller~ {
+    subgraph ApplicationLogic ["Application Logic (App)"]
+        class MotorController {
+            <<Controller>>
             -IMotorDriver
             +ProcessStep()
         }
     end
 
-    subgraph Hardware Abstraction (HAL)
-        class IMotorDriver~Interface~ {
+    subgraph HardwareAbstraction ["Hardware Abstraction (HAL)"]
+        class IMotorDriver {
             <<Interface>>
             +SetPWM(duty: uint8)
         }
     end
 
-    subgraph Board Support Package (BSP)
-        class STM32_PWM_Driver~Driver~ {
+    subgraph BoardSupportPackage ["Board Support Package (BSP)"]
+        class STM32_PWM_Driver {
             <<Singleton>>
             +SetPWM()
         }

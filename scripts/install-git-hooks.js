@@ -58,18 +58,9 @@ function install() {
     process.exit(1);
   }
 
-  const postCommitTarget = path.join(__dirname, '..', '.git', 'hooks', 'post-commit');
-  const postCommitScript = `#!/usr/bin/env bash
-node scripts/op-sync-time.js
-`;
-
   console.log('🔄 Installing Rkit OpenProject commit-msg Hook...');
   fs.writeFileSync(hookTarget, hookScript, { encoding: 'utf8', mode: 0o755 });
   console.log('✅ Successfully installed commit-msg hook.');
-
-  console.log('🔄 Installing Rkit OpenProject post-commit Hook (Time Sync)...');
-  fs.writeFileSync(postCommitTarget, postCommitScript, { encoding: 'utf8', mode: 0o755 });
-  console.log('✅ Successfully installed post-commit hook.');
 }
 
 install();

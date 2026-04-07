@@ -1,6 +1,6 @@
 {
   "name": "rkit",
-  "version": "0.9.2",
+  "version": "0.9.6",
   "displayName": "rkit — AI Native Development Kit",
   "description": "PDCA-driven MCU/MPU/WPF development with 41 agents, 70 skills, MCU critical analysis, code quality enforcement, STM32MP Yocto workflow.",
   "engines": {

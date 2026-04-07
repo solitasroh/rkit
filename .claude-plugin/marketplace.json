@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "AI Native Development Kit for MCU/MPU/WPF",
-    "version": "0.9.5"
+    "version": "0.9.6"
   },
   "plugins": [
     {
       "name": "rkit",
       "source": "./",
       "description": "PDCA-driven MCU/MPU/WPF development with 41 agents, 70 skills, MCU critical analysis, code quality enforcement, STM32MP Yocto workflow",
-      "version": "0.9.5",
+      "version": "0.9.6",
       "author": {
         "name": "solitasroh"
       },

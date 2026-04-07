@@ -1,6 +1,6 @@
 {
   "name": "rkit",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "displayName": "rkit — AI Native Embedded Development Kit",
   "description": "PDCA-driven MCU/MPU/WPF development with 41 agents, 70 skills, MCU critical analysis, code quality enforcement, STM32MP Yocto workflow.",
   "author": {
@@ -9,11 +9,26 @@
   "repository": "https://github.com/solitasroh/rkit",
   "license": "MIT",
   "keywords": [
-    "pdca", "embedded", "mcu", "mpu", "wpf",
-    "stm32", "nxp", "imx6", "cortex-m", "cortex-a",
-    "freertos", "yocto", "device-tree", "misra-c",
-    "mvvm", "xaml", "dotnet", "serial",
-    "ai-native", "claude-code-plugin"
+    "pdca",
+    "embedded",
+    "mcu",
+    "mpu",
+    "wpf",
+    "stm32",
+    "nxp",
+    "imx6",
+    "cortex-m",
+    "cortex-a",
+    "freertos",
+    "yocto",
+    "device-tree",
+    "misra-c",
+    "mvvm",
+    "xaml",
+    "dotnet",
+    "serial",
+    "ai-native",
+    "claude-code-plugin"
   ],
   "engines": {
     "claude-code": ">=2.1.78"

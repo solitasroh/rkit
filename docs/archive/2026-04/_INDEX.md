@@ -7,3 +7,4 @@
 | mr-lifecycle | 100% | 1 | 2026-04-03 |
 | ui-enhancement | 100% | 1 | 2026-04-03 |
 | ecc-insights-integration | 97.1% | 0 | 2026-04-10 |
+| instinct-engine | 95.8% | 0 | 2026-04-10 |

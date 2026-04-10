@@ -8,6 +8,7 @@
  *   3. contextInit - Context Hierarchy, Memory Store, ensureMcukitDirs
  *   4. domainDetect- ★ Domain auto-detection (MCU/MPU/WPF)
  *   5. onboarding  - Onboarding message generation
+ *  5.5. instinct   - Instinct profile load (converged patterns)
  *   6. sessionCtx  - additionalContext string building
  *   7. dashboard   - PDCA progress bar rendering
  *   8. workflowMap - Workflow map rendering
@@ -96,6 +97,19 @@ try {
   debugLog('SessionStart', 'Onboarding failed', { error: e.message });
 }
 
+// --- 5.5. Instinct Profile Load ---
+let instinctContext = '';
+try {
+  const { loadConvergedPatterns, getProfileSummary } = require('../lib/instinct/loader');
+  instinctContext = loadConvergedPatterns();
+  if (instinctContext) {
+    const summary = getProfileSummary();
+    debugLog('SessionStart', 'Instinct loaded', summary);
+  }
+} catch (e) {
+  debugLog('SessionStart', 'Instinct load skipped', { error: e.message });
+}
+
 // --- 6. Session Context ---
 let additionalContext = '';
 try {
@@ -103,6 +117,11 @@ try {
   additionalContext = sessionContext.build(null, onboardingContext);
 } catch (e) {
   debugLog('SessionStart', 'Session context failed', { error: e.message });
+}
+
+// --- 6.5. Instinct context injection ---
+if (instinctContext) {
+  additionalContext += '\n' + instinctContext + '\n';
 }
 
 // --- 7-9. PDCA Dashboard (Dual Output: terminal → stderr, context → additionalContext) ---

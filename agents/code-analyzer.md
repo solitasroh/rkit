@@ -30,6 +30,7 @@ linked-from-skills:
 imports:
   - ${PLUGIN_ROOT}/refs/code-quality/common.md
   - ${PLUGIN_ROOT}/refs/code-quality/architecture-patterns.md
+  - ${PROJECT_DIR}/.rkit/instinct/profile.md
 skills_preload:
   - phase-2-convention
   - code-review
@@ -217,6 +218,14 @@ Issues outside L1 scope — forward to appropriate layer:
 3. {Third priority}
 ```
 
+## Instinct Patterns
+
+If `profile.md` (imported above) contains "Project Instinct" patterns, check these **FIRST** before other rules. These are project-specific patterns learned from previous code reviews — they represent recurring issues in this codebase.
+
+- Report instinct-matched findings with `[INSTINCT]` in the Rule column
+- Instinct patterns take priority over general rules when they conflict
+- If profile.md is empty or missing, skip this section (no error)
+
 ## Invocation
 
 - **Automatic**: `/pdca analyze {feature}` when code-review skill is triggered
@@ -225,4 +234,4 @@ Issues outside L1 scope — forward to appropriate layer:
 
 ## Memory
 
-This agent uses `memory: project` scope — review findings and project-specific patterns persist across sessions. Findings feed into the instinct learning engine (Phase 3, v0.9.13) for cross-session consistency.
+This agent uses `memory: project` scope — review findings and project-specific patterns persist across sessions. Findings feed into the instinct learning engine (v0.9.13) for cross-session consistency.

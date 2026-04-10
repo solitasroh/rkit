@@ -100,8 +100,9 @@ try {
 // --- 5.5. Instinct Profile Load ---
 let instinctContext = '';
 try {
-  const { loadConvergedPatterns, getProfileSummary } = require('../lib/instinct/loader');
+  const { loadConvergedPatterns, getProfileSummary, writeProfileFile } = require('../lib/instinct/loader');
   instinctContext = loadConvergedPatterns();
+  writeProfileFile(); // Write profile.md for agent imports
   if (instinctContext) {
     const summary = getProfileSummary();
     debugLog('SessionStart', 'Instinct loaded', summary);

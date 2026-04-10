@@ -24,6 +24,7 @@ linked-from-skills:
 imports:
   - ${PLUGIN_ROOT}/refs/code-quality/csharp.md
   - ${PLUGIN_ROOT}/refs/code-quality/common.md
+  - ${PROJECT_DIR}/.rkit/instinct/profile.md
 tools:
   - Read
   - Glob

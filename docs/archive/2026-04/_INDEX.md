@@ -9,3 +9,4 @@
 | ecc-insights-integration | 97.1% | 0 | 2026-04-10 |
 | instinct-engine | 95.8% | 0 | 2026-04-10 |
 | instinct-integration | 97.5% | 0 | 2026-04-10 |
+| instinct-prompt-injection | 92% | 0 | 2026-04-10 |

@@ -7,7 +7,7 @@ const { execSync } = require('child_process');
 function getConfig() {
   let url = process.env.OPENPROJECT_URL || process.env.openproject_url || process.env.openproject_mcp_url;
   let apiKey = process.env.OPENPROJECT_API_KEY || process.env.openproject_api_key;
-  
+
   const possiblePaths = [
     path.join(process.cwd(), '.rkit', 'config.json'),
     path.join(process.cwd(), '.env'),
@@ -18,7 +18,7 @@ function getConfig() {
   for (const p of possiblePaths) {
     if (url && apiKey) break;
     if (!fs.existsSync(p)) continue;
-    
+
     try {
       if (p.endsWith('.json')) {
         const cfg = JSON.parse(fs.readFileSync(p, 'utf8'));
@@ -34,7 +34,7 @@ function getConfig() {
       }
     } catch(e) {}
   }
-  
+
   if (url && url.endsWith('/')) url = url.slice(0, -1);
   return { url, apiKey };
 }
@@ -65,19 +65,20 @@ async function main() {
       { "status": { "operator": "o", "values": [] } } // 'o' means open
     ]));
     const openData = await fetchOp(url, apiKey, `/api/v3/work_packages?filters=${openFilter}&pageSize=50`);
-    
+
     // 2. Fetch Yesterday's Closed Tasks: Assignee = me, Status = Closed, Updated last 2 days
     const closedFilter = encodeURIComponent(JSON.stringify([
       { "assignee": { "operator": "=", "values": ["me"] } },
       { "status": { "operator": "c", "values": [] } }, // 'c' means closed
-      { "updatedAt": { "operator": ">t-", "values": ["2"] } } 
+      { "updatedAt": { "operator": ">t-", "values": ["2"] } }
     ]));
     const closedData = await fetchOp(url, apiKey, `/api/v3/work_packages?filters=${closedFilter}&pageSize=50`);
 
     // 3. Fetch Git Commits from yesterday to today
     let gitCommits = '';
     try {
-      gitCommits = execSync('git log --since="yesterday.midnight" --pretty=format:"- %s" --no-merges', { stdio: 'pipe' }).toString().trim();
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      gitCommits = execSync(`git log --since="${yesterday}" --pretty=format:"- %s" --no-merges`, { stdio: 'pipe' }).toString().trim();
     } catch(e) {
       gitCommits = "- (No commits since yesterday)";
     }
@@ -87,7 +88,7 @@ async function main() {
     console.log('======================================================');
     console.log(`🎙️ DAILY STANDUP REPORT (${new Date().toLocaleDateString()})`);
     console.log('======================================================\n');
-    
+
     console.log('## ⏪ 어제 완료한 일 (Yesterday)');
     if (closedData._embedded?.elements?.length > 0) {
       closedData._embedded.elements.forEach(wp => {
@@ -112,7 +113,7 @@ async function main() {
       console.log('- [OP상 나에게 할당된 진행 중 태스크가 없습니다]');
     }
     console.log('\n----------------------------------------\n');
-    
+
     console.log('## 🚧 블로커 (Blockers / Issues)');
     console.log('- 없음 (특이사항 기재)');
     console.log('');

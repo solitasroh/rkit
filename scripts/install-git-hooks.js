@@ -29,7 +29,7 @@ try {
   // 4. Validate presence of [OP#<number>] anywhere in the message. Case insensitive.
   // We don't enforce strict matching of branch ID to allow sub-tasks to be committed in epic branches.
   const opTagRegex = /\\[OP#\\d+\\]/i;
-  
+
   if (!opTagRegex.test(msgContent)) {
     console.error('\\n======================================================');
     console.error('❌ [Rkit OP-Hook] Commit Blocked!');
@@ -59,8 +59,12 @@ function install() {
   }
 
   const postCommitTarget = path.join(__dirname, '..', '.git', 'hooks', 'post-commit');
-  const postCommitScript = `#!/usr/bin/env bash
-node scripts/op-sync-time.js
+  const postCommitScript = `#!/usr/bin/env node
+const { execSync } = require('child_process');
+const path = require('path');
+try {
+  execSync('node ' + path.join('scripts', 'op-sync-time.js'), { stdio: 'inherit' });
+} catch (e) { /* non-blocking */ }
 `;
 
   console.log('🔄 Installing Rkit OpenProject commit-msg Hook...');

@@ -28,6 +28,8 @@ const CODE_EXTENSIONS = new Set([
   '.py',
 ]);
 
+const _suppress = process.platform === 'win32' ? '2>NUL' : '2>/dev/null';
+
 /** Linter commands by extension */
 const LINTER_COMMANDS = {
   '.c':   'cppcheck --enable=style --quiet --template="{file}:{line}: {severity}: {message}" {file}',
@@ -35,11 +37,11 @@ const LINTER_COMMANDS = {
   '.h':   'cppcheck --enable=style --quiet --template="{file}:{line}: {severity}: {message}" {file}',
   '.hpp': 'cppcheck --enable=style --quiet --template="{file}:{line}: {severity}: {message}" {file}',
   '.cs':  'dotnet format --verify-no-changes --include {file} 2>&1 || true',
-  '.ts':  'npx --no-install eslint --no-fix --format compact {file} 2>/dev/null || npx --no-install biome check {file} 2>/dev/null || true',
-  '.tsx': 'npx --no-install eslint --no-fix --format compact {file} 2>/dev/null || npx --no-install biome check {file} 2>/dev/null || true',
-  '.js':  'npx --no-install eslint --no-fix --format compact {file} 2>/dev/null || true',
-  '.jsx': 'npx --no-install eslint --no-fix --format compact {file} 2>/dev/null || true',
-  '.py':  'ruff check --no-fix --output-format text {file} 2>/dev/null || true',
+  '.ts':  `npx --no-install eslint --no-fix --format compact {file} ${_suppress} || npx --no-install biome check {file} ${_suppress} || true`,
+  '.tsx': `npx --no-install eslint --no-fix --format compact {file} ${_suppress} || npx --no-install biome check {file} ${_suppress} || true`,
+  '.js':  `npx --no-install eslint --no-fix --format compact {file} ${_suppress} || true`,
+  '.jsx': `npx --no-install eslint --no-fix --format compact {file} ${_suppress} || true`,
+  '.py':  `ruff check --no-fix --output-format text {file} ${_suppress} || true`,
 };
 
 /**
@@ -56,8 +58,9 @@ function runLinter(filePath) {
   const tool = cmd.split(' ')[0];
 
   // Check if tool exists
+  const whichCmd = process.platform === 'win32' ? 'where' : 'which';
   try {
-    execSync(`which ${tool} 2>/dev/null || where ${tool} 2>/dev/null`, { stdio: 'pipe' });
+    execSync(`${whichCmd} ${tool}`, { stdio: 'pipe' });
   } catch {
     return { output: '', skipped: true };
   }

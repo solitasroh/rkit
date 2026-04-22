@@ -164,6 +164,15 @@ try {
   debugLog('UnifiedWritePost', 'code-quality-hook failed', { error: e.message });
 }
 
+// C++ static analysis (cpp-static-analysis) — only fires for C/C++ extensions.
+// Non-blocking: Python hook stderr is relayed, never outputs decision:block.
+try {
+  const { handleCppStaticAnalysis } = require('./cpp-static-analysis-hook');
+  handleCppStaticAnalysis(input);
+} catch (e) {
+  debugLog('UnifiedWritePost', 'cpp-static-analysis-hook failed', { error: e.message });
+}
+
 // v1.6.0 ENH-103: PDCA template validation
 if (filePath) {
   try {

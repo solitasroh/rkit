@@ -1,0 +1,69 @@
+{
+  "$schema": "rapp-project-config-v3",
+  "_comment": ".claude/project-config.json으로 복사하여 사용 (install.py가 자동 수행)",
+
+  "paths": {
+    "src": "src",
+    "docs": "docs",
+    "design": "docs/design",
+    "review": ".rkit/state/cpp-static-analysis",
+    "concept": "docs/concept",
+    "tests": "tests"
+  },
+
+  "thresholds": {
+    "file_lines": 400,
+    "class_lines": 400,
+    "function_lines": 30,
+    "function_branches": 5,
+    "nesting_depth": 3,
+    "function_params": 4
+  },
+
+  "review": {
+    "_comment": "rapp-review 스킬 전용. 생략 시 전부 기본값.",
+    "default_target": "src",
+    "output": {
+      "subdir_format": "%Y%m%d-%H%M%S",
+      "keep_latest_symlink": true,
+      "retention": 10
+    },
+    "render": {
+      "group_by": "severity",
+      "split_by_layer": false
+    }
+  },
+
+  "metrics": {
+    "_comment": "rule 목록: class_DIT_high, class_NOC_high, thin_class, speculative_generality, class_Ca_high, class_Ce_high, zone_of_pain, class_cycle, god_class, inappropriate_intimacy. thresholds/rules 서브섹션으로 튜닝 가능 (metrics.py::DEFAULT_METRIC_RULES 참조). dump_all_values=true가 기본 — 대형 프로젝트에서 summary.md가 길어져 부담이면 false로 끌 것.",
+    "dump_all_values": true
+  },
+
+  "build": {
+    "system": "cmake",
+    "compile_commands": "build/compile_commands.json",
+    "_note": "rapp-review는 이 섹션을 참조하지 않음. 빌드 타임 린트(clang-tidy 등)와의 중복을 피하기 위함."
+  },
+
+  "ignore_patterns": [
+    "third_party/**",
+    "generated/**",
+    "build/**"
+  ],
+
+  "patterns": {
+    "require_reason": false,
+    "report_unused_suppressions": false,
+    "categories": {
+      "smell":        { "enabled": true, "severity": "minor" },
+      "idiom":        { "enabled": true },
+      "anti-pattern": { "enabled": true }
+    },
+    "rules": {
+      "_comment": "개별 규칙 enabled/severity/options. rule-level이 category-level보다 우선.",
+      "SMELL-03": { "enabled": false, "reason": "legacy API" },
+      "IDIOM-07": { "options": { "min_branches": 7 } },
+      "AP-07":    { "severity": "blocker" }
+    }
+  }
+}

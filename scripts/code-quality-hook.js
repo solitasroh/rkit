@@ -139,6 +139,13 @@ if (require.main === module) {
     const { readStdinSync, outputAllow } = getIo();
     const input = readStdinSync();
     handleCodeQuality(input);
+    // C++ static analysis — only fires for C/C++ extensions. Non-blocking.
+    try {
+      const { handleCppStaticAnalysis } = require('./cpp-static-analysis-hook');
+      handleCppStaticAnalysis(input);
+    } catch (e) {
+      getDebug().debugLog('CodeQualityHook', 'cpp-static-analysis-hook failed', { error: e.message });
+    }
     outputAllow();
   } catch (e) {
     // Non-blocking — never prevent tool execution

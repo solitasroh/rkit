@@ -1,6 +1,15 @@
 # rkit runtime state (session-specific, not versioned)
 .bkit/
 .rkit/
+.pdca-status.json
+
+# Claude Code local settings (per-user, not versioned)
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
 
 # Node
 node_modules/

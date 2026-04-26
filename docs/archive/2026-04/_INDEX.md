@@ -11,3 +11,4 @@
 | instinct-integration | 97.5% | 0 | 2026-04-10 |
 | instinct-prompt-injection | 92% | 0 | 2026-04-10 |
 | mr-line-comment-fix | 95% | 0 | 2026-04-10 |
+| instinct-codegen | 100% | 0 | 2026-04-27 |

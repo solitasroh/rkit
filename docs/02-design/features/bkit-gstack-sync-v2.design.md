@@ -531,7 +531,7 @@ bkit 정합 우선 + 회귀 위험 최소화 순서로 6 커밋 단위로 진행
 |---|---|
 | 기존 단위/통합 | `node test-all.js` |
 | instinct 통합 | `node tests/instinct-integration.test.js` |
-| 아키텍처 E2E | `node test-architecture-e2e.js` |
+| 아키텍처 E2E | `node tests/test-architecture-e2e.js` |
 | 기존 audit log 호환 | `.rkit/audit/2026-04-*.jsonl` 샘플 라인을 v2 schema(rkitVersion 키 포함)로 파싱 → 모든 필드 정상 |
 
 ### 6.3 Hook Output Byte-Diff

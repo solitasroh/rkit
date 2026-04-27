@@ -1,6 +1,6 @@
-const scanner = require('./lib/core/architecture-scanner');
-const creator = require('./lib/task/creator');
-const gateManager = require('./lib/quality/gate-manager');
+const scanner = require('../lib/core/architecture-scanner');
+const creator = require('../lib/task/creator');
+const gateManager = require('../lib/quality/gate-manager');
 
 console.log("=== 1. Testing Architecture Scanner ===");
 const map = scanner.scanArchitecture();

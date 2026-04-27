@@ -171,7 +171,7 @@ version: 1.2
 |----------|----------|-------------|
 | Code reduction | Cycle 1 net LOC 감소 ≥ 1,300 LOC | `git diff --shortstat` |
 | 동작 등가성 | SessionStart hook 출력 byte-diff ≤ 5% (정보성 라인 변경 허용) | hook 직접 실행 비교 |
-| 테스트 회귀 | 전 단위/통합 테스트 PASS 유지 | `node test-all.js`, `node tests/instinct-integration.test.js`, `node test-architecture-e2e.js` |
+| 테스트 회귀 | 전 단위/통합 테스트 PASS 유지 | `node test-all.js`, `node tests/instinct-integration.test.js`, `node tests/test-architecture-e2e.js` |
 | audit-logger 호환 | 기존 audit log 라인 schema 하위 호환 (새 필드만 추가) | 기존 `.rkit/audit/*.jsonl` 샘플 검증 |
 | PII redaction 효과 | password/token/secret 키 → `[REDACTED]`, 500자 초과 → `…[truncated]` | TC 추가 |
 | context facade 정합성 | `require('./lib/context')`가 5 live 모듈 export만 제공 | node smoke test |
@@ -208,7 +208,7 @@ version: 1.2
 | 검증 항목 | 방법 |
 |---|---|
 | SessionStart hook 정상 종료 | `node hooks/session-start.js` 실행 후 exit code 0 및 JSON 출력 |
-| 단위/통합 테스트 PASS | `node test-all.js`, `node tests/instinct-integration.test.js`, `node test-architecture-e2e.js` |
+| 단위/통합 테스트 PASS | `node test-all.js`, `node tests/instinct-integration.test.js`, `node tests/test-architecture-e2e.js` |
 | audit-logger 신규 TC | `password/token/api_key/secret` → `[REDACTED]`, 600자 string → `…[truncated]` |
 | audit-logger CATEGORIES TC | `category: 'permission'` 등 새 4 카테고리 통과, 무효 카테고리는 기존대로 fallback |
 

@@ -64,10 +64,10 @@ version: 1.1
 
 | 문서 | 상태 | 경로 | 비고 |
 |---|---|---|---|
-| **Plan** | ✅ Complete | `docs/01-plan/features/bkit-gstack-sync-v2.plan.md` | 7 FR, 6 NFR, 7 Risk, 5 Decision Records 정의 |
-| **Design** | ✅ Complete | `docs/02-design/features/bkit-gstack-sync-v2.design.md` | 9 TC, 6-commit sequence, 상세 변경 위치 |
-| **Analysis (Check)** | ✅ Complete | `docs/03-analysis/bkit-gstack-sync-v2.analysis.md` | Match Rate 100%, 0 gaps, EXTRA-1 follow-up 기록 |
-| **Implementation** | ✅ Complete | branch: `feature/bkit-gstack-sync-v2` | 8 commits (C1~C7 + C7 fix-up) |
+| **Plan** | ✅ Complete (archived) | `docs/archive/2026-04/bkit-gstack-sync-v2/bkit-gstack-sync-v2.plan.md` | 7 FR, 6 NFR, 7 Risk, 5 Decision Records 정의 |
+| **Design** | ✅ Complete (archived) | `docs/archive/2026-04/bkit-gstack-sync-v2/bkit-gstack-sync-v2.design.md` | 9 TC, 6-commit sequence, 상세 변경 위치 |
+| **Analysis (Check)** | ✅ Complete (archived) | `docs/archive/2026-04/bkit-gstack-sync-v2/bkit-gstack-sync-v2.analysis.md` | Match Rate 100%, 0 gaps, EXTRA-1 follow-up 기록 |
+| **Implementation** | ✅ Complete | branch: `feature/bkit-gstack-sync-v2` | 9 commits total (8 Cycle 1 + 1 archive). Note: SHAs were rewritten by `git filter-branch` to drop AI Co-Authored-By trailers. Hashes below are post-rewrite. |
 
 ---
 
@@ -75,7 +75,7 @@ version: 1.1
 
 ### FR-01: Group A Dead 파일 정리 + context facade 정합
 
-**Commits**: `5623a06` (C2), `ea3dfaf` (C3)
+**Commits**: `29cd8bf` (C2), `19f078a` (C3)
 
 **변경 파일**:
 - 삭제: `lib/context/{self-healing.js, ops-metrics.js, decision-record.js}` (393 LOC)
@@ -89,7 +89,7 @@ version: 1.1
 
 ### FR-02: context-fork 정리
 
-**Commit**: `2e94ad7` (C6)
+**Commit**: `c36701d` (C6)
 
 **변경 파일**:
 - 삭제: `lib/context-fork.js` (227 LOC)
@@ -104,7 +104,7 @@ version: 1.1
 
 ### FR-03: context-hierarchy 정리 + 3 사용처
 
-**Commits**: `2e94ad7` (C6), `54cdd80` (C5), `69642ec` (C4)
+**Commits**: `c36701d` (C6), `3552077` (C5), `6092b73` (C4)
 
 **변경 파일**:
 - 삭제: `lib/context-hierarchy.js` (276 LOC)
@@ -120,7 +120,7 @@ version: 1.1
 
 ### FR-04: memory-store 정리
 
-**Commit**: `2e94ad7` (C6)
+**Commit**: `c36701d` (C6)
 
 **변경 파일**:
 - 삭제: `lib/memory-store.js` (185 LOC)
@@ -132,7 +132,7 @@ version: 1.1
 
 ### FR-05: audit-logger PII redaction
 
-**Commit**: `a1087de` (C1)
+**Commit**: `fc4303d` (C1)
 
 **변경 파일**: `lib/audit/audit-logger.js:55-190`
 
@@ -153,7 +153,7 @@ const DETAILS_VALUE_MAX_CHARS = 500;
 
 ### FR-06: CATEGORIES enum 확장
 
-**Commit**: `a1087de` (C1)
+**Commit**: `fc4303d` (C1)
 
 **변경**: `lib/audit/audit-logger.js:55`
 ```js
@@ -167,7 +167,7 @@ const CATEGORIES = ['pdca', 'file', 'config', 'control', 'team', 'quality',
 
 ### FR-07: import-resolver DEF-1~3 결함 수정
 
-**Commits**: `69642ec` (C4), `7edce2a` (C7 follow-up)
+**Commits**: `6092b73` (C4), `c22c502` (C7 follow-up)
 
 **결함 수정**:
 - **DEF-1**: `lib/import-resolver.js:17-22` — `getCommon()` body empty → 제거하고 broken 주석 추가
@@ -183,7 +183,7 @@ const CATEGORIES = ['pdca', 'file', 'config', 'control', 'team', 'quality',
 
 ### EXTRA-1: C7 Follow-up Commit (자연스러운 closure)
 
-**Commit**: `7edce2a`
+**Commit**: `c22c502`
 
 **변경**:
 - `agents/self-healing.md:5,83` — `lib/context/self-healing.js` 삭제로 인한 HEALING_STRATEGIES 인라인 처리 (agent 문서가 dead module 참조하지 않도록)
@@ -245,11 +245,11 @@ const CATEGORIES = ['pdca', 'file', 'config', 'control', 'team', 'quality',
 
 | ID | Decision | Where Applied | Rationale in Hindsight |
 |---|---|---|---|
-| **D-1** | `lib/context/index.js` 보존 (5 live 모듈 re-export로 축소) | §3.1 + `5623a06` | bkit upstream 정합 우선 정책. rkit 내부 사용처는 없으나 외부 require 호환성(향후 프로젝트) + 정책 "명시적 분기만" 준수. **결과**: bkit과 동일한 11 keys facade 완성. |
-| **D-2** | permission-manager: `getHierarchicalConfig` 제거하되 rkit.config permissions 병합 보존 | §3.3.2 + `54cdd80` | hierarchy 의존 제거하되 MCU/MPU 안전 정책(`rm -rf*, dd if=*, mkfs*` 등)은 rkit에 특화된 기능이므로 `core.getConfig('permissions')` 병합으로 보존. **결과**: TC-5 매트릭스 27/27 PASS — 6 안전 정책 정확히 분류. |
-| **D-3** | `lib/skill-orchestrator.js` broken `getCommon()` 동시 정리 (Cycle 1 포함) | §3.3.4 + `69642ec` | bkit S1 cleanup에서 함께 정리된 항목. rkit도 동일 broken 패턴 → import-resolver와 동일 커밋 시퀀스에서 처리. **결과**: DEF-3 결함 제거, getImportResolver 정상화. |
+| **D-1** | `lib/context/index.js` 보존 (5 live 모듈 re-export로 축소) | §3.1 + `29cd8bf` | bkit upstream 정합 우선 정책. rkit 내부 사용처는 없으나 외부 require 호환성(향후 프로젝트) + 정책 "명시적 분기만" 준수. **결과**: bkit과 동일한 11 keys facade 완성. |
+| **D-2** | permission-manager: `getHierarchicalConfig` 제거하되 rkit.config permissions 병합 보존 | §3.3.2 + `3552077` | hierarchy 의존 제거하되 MCU/MPU 안전 정책(`rm -rf*, dd if=*, mkfs*` 등)은 rkit에 특화된 기능이므로 `core.getConfig('permissions')` 병합으로 보존. **결과**: TC-5 매트릭스 27/27 PASS — 6 안전 정책 정확히 분류. |
+| **D-3** | `lib/skill-orchestrator.js` broken `getCommon()` 동시 정리 (Cycle 1 포함) | §3.3.4 + `6092b73` | bkit S1 cleanup에서 함께 정리된 항목. rkit도 동일 broken 패턴 → import-resolver와 동일 커밋 시퀀스에서 처리. **결과**: DEF-3 결함 제거, getImportResolver 정상화. |
 | **D-4** | gstack 4 스킬 강화 → Cycle 1.5로 분리 | Plan §2.1.4 + 본 Design OOS | cleanup은 동작 의미 변경 없이 코드만 정리. gstack 스킬 강화(`/investigate`, `/retro`, `/security-review`, `/code-review` 후속 패치)는 스킬 동작 의미 변경을 포함하므로 별도 eval/PR로 분리. **결과**: cleanup PR 회귀 표면 최소화, 명확한 책임 분리. |
-| **D-5** | `MCUKIT_VERSION` 상수 유지 (`BKIT_VERSION` SoT 도입은 Cycle 2 이월) | §3.5~3.6 + `a1087de` | `lib/core/version.js` 미보유하므로 v2.1.10 audit-logger PII redaction만 먼저 도입. version SoT 통일은 lib/core 신규 모듈 도입 후 Cycle 2로 이월. **결과**: audit 강화만 수행하고 구조 변경 없음 (회귀 최소화). |
+| **D-5** | `MCUKIT_VERSION` 상수 유지 (`BKIT_VERSION` SoT 도입은 Cycle 2 이월) | §3.5~3.6 + `fc4303d` | `lib/core/version.js` 미보유하므로 v2.1.10 audit-logger PII redaction만 먼저 도입. version SoT 통일은 lib/core 신규 모듈 도입 후 Cycle 2로 이월. **결과**: audit 강화만 수행하고 구조 변경 없음 (회귀 최소화). |
 
 ---
 
@@ -263,7 +263,7 @@ const CATEGORIES = ['pdca', 'file', 'config', 'control', 'team', 'quality',
 | **R-4** | gstack 후속 패치가 cleanup PR 회귀 표면 넓힘 | Cycle 1.5로 명시적 분리. 본 8 commits에 gstack 스킬 변경 0건 (OOS 정책 준수). | ✅ Mitigated |
 | **R-5** | sanitizeDetails 도입 시 의도적 password 전송 호출처 부작용 | `lib/audit/audit-logger.js` 호출처 grep — 민감키 전송 0건. 76+15+E2E regression 모두 PASS. | ✅ Mitigated |
 | **R-6** | main에 다른 변경 머지로 rebase 충돌 | `feature/bkit-gstack-sync-v2` 단발 브랜치. 8 commits 모두 명확한 순차 의존 (C1→C2→...→C7). main 기준 충돌 0건. | ✅ Mitigated |
-| **R-7** (신규) | DEF-1~3 silent fail이 startupImports 무력화 중 | C4 (`69642ec`)에서 `getCore()` lazy + `.claude/rkit` 분기 정상 해석. smoke test 24/24 PASS. startupImports 기능 원복. **이전 silent fail 제거** — 향후 import 기반 스킬은 정상 동작. | ✅ Mitigated |
+| **R-7** (신규) | DEF-1~3 silent fail이 startupImports 무력화 중 | C4 (`6092b73`)에서 `getCore()` lazy + `.claude/rkit` 분기 정상 해석. smoke test 24/24 PASS. startupImports 기능 원복. **이전 silent fail 제거** — 향후 import 기반 스킬은 정상 동작. | ✅ Mitigated |
 
 ---
 
@@ -271,7 +271,7 @@ const CATEGORIES = ['pdca', 'file', 'config', 'control', 'team', 'quality',
 
 ### EXTRA-1: C7 Follow-up Commit (자연스러운 closure)
 
-**Commit Hash**: `7edce2a`
+**Commit Hash**: `c22c502`
 
 **파일 변경**:
 - `agents/self-healing.md:5,83` — `HEALING_STRATEGIES` inline (lib/context/self-healing.js 삭제 대응)
@@ -424,14 +424,14 @@ const CATEGORIES = ['pdca', 'file', 'config', 'control', 'team', 'quality',
 
 | Hash | C# | Commit Message | Files | LOC Δ | Status |
 |---|---|---|---|---|---|
-| `a6210b9` | — | docs(pdca): add bkit-gstack-sync-v2 Plan + Design | `docs/01-plan/features/`, `docs/02-design/features/` | +903 | 초기 |
-| `a1087de` | C1 | refactor(audit): sanitizeDetails + extend CATEGORIES | `lib/audit/audit-logger.js` | +80/−2 | ✅ |
-| `5623a06` | C2 | refactor(context): trim lib/context/index.js, delete 3 dead | `lib/context/{index,self-healing,ops-metrics,decision-record}.js` | +7/−566 | ✅ |
-| `ea3dfaf` | C3 | refactor(orphan): delete do-detector + backup-scheduler | `lib/pdca/do-detector.js`, `lib/core/backup-scheduler.js` | 0/−381 | ✅ |
-| `69642ec` | C4 | refactor(import-resolver): fix broken bridges + inline | `lib/{import-resolver,skill-orchestrator}.js`, `tests/import-resolver.smoke.test.js` | +142/−30 | ✅ |
-| `54cdd80` | C5 | refactor(permission-manager): core config merge + drop hierarchy | `lib/permission-manager.js`, `tests/permission-matrix.smoke.test.js` | +134/−20 | ✅ |
-| `2e94ad7` | C6 | refactor(hooks): slim context-init.js, delete 3 files | `hooks/startup/context-init.js`, `lib/{context-fork,context-hierarchy,memory-store}.js` | +17/−759 | ✅ |
-| `7edce2a` | C7 | fix(cycle1): inline HEALING_STRATEGIES, repair e2e paths | `agents/self-healing.md`, `tests/test-architecture-e2e.js` | +52/−9 | ✅ |
+| `c02c8a0` | — | docs(pdca): add bkit-gstack-sync-v2 Plan + Design | `docs/01-plan/features/`, `docs/02-design/features/` | +903 | 초기 |
+| `fc4303d` | C1 | refactor(audit): sanitizeDetails + extend CATEGORIES | `lib/audit/audit-logger.js` | +80/−2 | ✅ |
+| `29cd8bf` | C2 | refactor(context): trim lib/context/index.js, delete 3 dead | `lib/context/{index,self-healing,ops-metrics,decision-record}.js` | +7/−566 | ✅ |
+| `19f078a` | C3 | refactor(orphan): delete do-detector + backup-scheduler | `lib/pdca/do-detector.js`, `lib/core/backup-scheduler.js` | 0/−381 | ✅ |
+| `6092b73` | C4 | refactor(import-resolver): fix broken bridges + inline | `lib/{import-resolver,skill-orchestrator}.js`, `tests/import-resolver.smoke.test.js` | +142/−30 | ✅ |
+| `3552077` | C5 | refactor(permission-manager): core config merge + drop hierarchy | `lib/permission-manager.js`, `tests/permission-matrix.smoke.test.js` | +134/−20 | ✅ |
+| `c36701d` | C6 | refactor(hooks): slim context-init.js, delete 3 files | `hooks/startup/context-init.js`, `lib/{context-fork,context-hierarchy,memory-store}.js` | +17/−759 | ✅ |
+| `c22c502` | C7 | fix(cycle1): inline HEALING_STRATEGIES, repair e2e paths | `agents/self-healing.md`, `tests/test-architecture-e2e.js` | +52/−9 | ✅ |
 | — | — | **Total (code-only)** | — | **+209/−1761** | **✅ Complete** |
 
 ---

@@ -517,7 +517,7 @@ bkit 정합 우선 + 회귀 위험 최소화 순서로 6 커밋 단위로 진행
 |---|---|---|---|
 | TC-1 | context facade | `node -e "console.log(Object.keys(require('./lib/context')).sort())"` | 11 keys, dead 모듈 export 부재 |
 | TC-2 | grep dead 사용처 | `grep -rn "do-detector\|backup-scheduler\|context/self-healing\|context/ops-metrics\|context/decision-record" lib/ hooks/ scripts/ skills/ servers/ scripts/` | 0건 |
-| TC-3 | grep removed live | `grep -rn "context-fork\|context-hierarchy\|memory-store" lib/ hooks/` | 0건 (단, lib/code-quality 등 무관 매치는 false positive) |
+| TC-3 | runtime references to removed live modules | `grep -rnE "require\\(.+(context-fork\|context-hierarchy\|memory-store)" lib/ hooks/` (require 기반 런타임 참조만) | 0건. NOTE 주석은 의도적 잔존이므로 검증 패턴에서 제외. plain `grep "context-fork\|..."`는 이 NOTE 주석이 매치되므로 사용하지 않음. |
 | TC-4 | import-resolver smoke | `node tests/import-resolver.smoke.test.js` | OK |
 | TC-5 | permission-manager config matrix | `node tests/permission-matrix.smoke.test.js` (C5에서 신설) — 6 안전 정책 케이스(`rm -rf`, `dd if=`, `mkfs`, `st-flash erase`, `STM32_Programmer_CLI -e all`, `git push --force`) 일괄 검증. `rkit.config.json`의 permissions 병합 결과까지 포함. | exit 0, "OK" 출력 |
 | TC-6 | audit sanitizeDetails — PII | `audit.writeAuditLog({action:'control_action', target:'x', details:{password:'p1', token:'t1', name:'ok'}})` → 파일 마지막 라인 JSON parse → `details.password === '[REDACTED]'` | PASS |

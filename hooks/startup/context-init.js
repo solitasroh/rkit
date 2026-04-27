@@ -1,17 +1,25 @@
 /**
- * rkit Embedded Dev Kit - SessionStart: Context Initialization Module (v2.0.0)
+ * rkit Embedded Dev Kit - SessionStart: Context Initialization Module
  *
- * Handles Context Hierarchy, Memory Store, Import Resolver initialization,
- * and Context Fork cleanup (stale forks).
+ * Loads startup imports via lib/import-resolver, scans SKILL.md frontmatter
+ * for `context: fork` configuration, and surfaces a UserPromptSubmit
+ * compatibility warning when relevant.
+ *
+ * NOTE (bkit-gstack-sync-v2 / Cycle 1, C6):
+ *   The previous Context Hierarchy / Memory Store / Context Fork
+ *   initialization blocks were removed alongside their backing modules
+ *   (lib/context-hierarchy.js, lib/memory-store.js, lib/context-fork.js).
+ *   Those blocks were already silent no-ops in practice (loaded via
+ *   safeRequire and broken at the call site by undefined `core.*`
+ *   identifiers — see DEF-1/2/3 fixed in C4). Removing them simply
+ *   makes the silent skip explicit and matches bkit upstream.
  */
 
 const fs = require('fs');
 const path = require('path');
-const { MCUKIT_PLATFORM } = require('../../lib/core/platform');
-const { detectLevel } = require('../../lib/pdca/level');
-const { debugLog } = require('../../lib/core/debug');
 const { initPdcaStatusIfNotExists, getPdcaStatusFull } = require('../../lib/pdca/status');
 const { getMcukitConfig } = require('../../lib/core/config');
+const { debugLog } = require('../../lib/core/debug');
 
 // Lazy-load optional modules with graceful fallback
 function safeRequire(modulePath) {
@@ -24,16 +32,12 @@ function safeRequire(modulePath) {
 
 /**
  * Run context initialization.
- * Initializes Context Hierarchy, Memory Store, Import Resolver,
- * and cleans up stale Context Forks.
+ * Loads startup imports and scans skills for context:fork configuration.
  * @param {object} _input - Hook input (unused, reserved for future use)
- * @returns {{ contextHierarchy: object|null, memoryStore: object|null, importResolver: object|null, contextFork: object|null, forkEnabledSkills: Array }}
+ * @returns {{ importResolver: object|null, forkEnabledSkills: Array, userPromptBugWarning: string|null }}
  */
 function run(_input) {
-  const contextHierarchy = safeRequire('../../lib/context-hierarchy.js');
-  const memoryStore = safeRequire('../../lib/memory-store.js');
   const importResolver = safeRequire('../../lib/import-resolver.js');
-  const contextFork = safeRequire('../../lib/context-fork.js');
 
   // v2.0.0: Ensure all rkit directories exist (audit/, checkpoints/, decisions/, workflows/, etc.)
   try {
@@ -51,47 +55,6 @@ function run(_input) {
     getPdcaStatusFull();
   } catch (e) {
     debugLog('SessionStart', 'PDCA status migration check failed', { error: e.message });
-  }
-
-  // Context Hierarchy initialization (FR-01)
-  if (contextHierarchy) {
-    try {
-      contextHierarchy.clearSessionContext();
-      const pdcaStatus = getPdcaStatusFull();
-      contextHierarchy.setSessionContext('sessionStartedAt', new Date().toISOString());
-      contextHierarchy.setSessionContext('platform', MCUKIT_PLATFORM);
-      const detectedLevel = detectLevel();
-      contextHierarchy.setSessionContext('level', detectedLevel);
-      if (pdcaStatus && pdcaStatus.primaryFeature) {
-        contextHierarchy.setSessionContext('primaryFeature', pdcaStatus.primaryFeature);
-      }
-      debugLog('SessionStart', 'Session context initialized', {
-        platform: MCUKIT_PLATFORM,
-        level: detectedLevel
-      });
-    } catch (e) {
-      debugLog('SessionStart', 'Failed to initialize session context', { error: e.message });
-    }
-  }
-
-  // Memory Store initialization (FR-08)
-  if (memoryStore) {
-    try {
-      const sessionCount = memoryStore.getMemory('sessionCount', 0);
-      memoryStore.setMemory('sessionCount', sessionCount + 1);
-      const previousSession = memoryStore.getMemory('lastSession', null);
-      memoryStore.setMemory('lastSession', {
-        startedAt: new Date().toISOString(),
-        platform: MCUKIT_PLATFORM,
-        level: detectLevel()  // cached by level.js _levelCache
-      });
-      debugLog('SessionStart', 'Memory store initialized', {
-        sessionCount: sessionCount + 1,
-        hasPreviousSession: !!previousSession
-      });
-    } catch (e) {
-      debugLog('SessionStart', 'Failed to initialize memory store', { error: e.message });
-    }
   }
 
   // Import Resolver - Load startup context (FR-02)
@@ -117,19 +80,6 @@ function run(_input) {
       }
     } catch (e) {
       debugLog('SessionStart', 'Failed to load startup imports', { error: e.message });
-    }
-  }
-
-  // Context Fork cleanup - Clear stale forks from previous session (FR-03)
-  if (contextFork) {
-    try {
-      const activeForks = contextFork.getActiveForks();
-      if (activeForks.length > 0) {
-        contextFork.clearAllForks();
-        debugLog('SessionStart', 'Cleared stale forks', { count: activeForks.length });
-      }
-    } catch (e) {
-      debugLog('SessionStart', 'Failed to clear stale forks', { error: e.message });
     }
   }
 
@@ -168,8 +118,7 @@ function run(_input) {
         }
       }
     }
-    if (forkEnabledSkills.length > 0 && contextHierarchy) {
-      contextHierarchy.setSessionContext('forkEnabledSkills', forkEnabledSkills);
+    if (forkEnabledSkills.length > 0) {
       debugLog('SessionStart', 'Fork-enabled skills detected', { skills: forkEnabledSkills });
     }
   } catch (e) {
@@ -197,10 +146,7 @@ function run(_input) {
   }
 
   return {
-    contextHierarchy,
-    memoryStore,
     importResolver,
-    contextFork,
     forkEnabledSkills,
     userPromptBugWarning
   };
